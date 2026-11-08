@@ -100,12 +100,7 @@
 
       <!-- Voice / MP3 Audio Engine Controls -->
       <div class="flex flex-wrap items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-semibold text-slate-600">🎙️ 語音聲線：</span>
-          <select id="voice-select" aria-label="選擇中文語音" class="max-w-[175px] px-2 py-1 rounded border border-slate-300 text-xs bg-white text-slate-700">
-            <option value="">自動優選自然好聽中文女聲</option>
-          </select>
-        </div>
+        <span class="text-xs font-semibold text-slate-600">🎙️ 中文與英文自然語音 MP3</span>
 
         <div class="flex items-center gap-1.5">
           <span class="text-xs font-semibold text-slate-600">語速：</span>
@@ -437,7 +432,7 @@
     let isFrontMasked = false;
     let isFrontCollapsed = false;
     let bookmarks = new Set();
-    let availableVoices = [];
+
 
     // Safe localStorage load for bookmarks
     try {
@@ -473,7 +468,6 @@
     const categorySelect = document.getElementById('category-select');
     const searchInput = document.getElementById('search-input');
     const clearSearchBtn = document.getElementById('clear-search-btn');
-    const voiceSelect = document.getElementById('voice-select');
     const rateSelect = document.getElementById('rate-select');
     const langModeSelect = document.getElementById('lang-mode-select');
     const printPdfBtn = document.getElementById('print-pdf-btn');
@@ -513,147 +507,84 @@
     const copyCmdBtn = document.getElementById('copy-cmd-btn');
     const copyCmdFeedback = document.getElementById('copy-cmd-feedback');
 
-    // Initialize Voices (prioritizing natural Neural / Google / Microsoft Mandarin & English voices)
-    function loadVoices() {
-      if (!('speechSynthesis' in window)) return;
-      const rawVoices = window.speechSynthesis.getVoices() || [];
-      if (!rawVoices.length) return;
-      availableVoices = rawVoices;
-
-      const zhVoices = rawVoices.filter(v => /zh|cmn|chi/i.test(v.lang) || /Chinese|Taiwan|Mandarin|國語|台灣/i.test(v.name));
-      zhVoices.sort((a, b) => {
-        const score = (v) => {
-          let s = 0;
-          if (/TW|Hant|Taiwan|台灣/i.test(v.lang + v.name)) s += 50;
-          if (/Natural|Neural|Online|HsiaoChen|HsiaoYu|Yating|Meijia|Google/i.test(v.name)) s += 40;
-          return s;
-        };
-        return score(b) - score(a);
-      });
-
-      voiceSelect.innerHTML = '<option value="">✨ 自動優選自然好聽中文語音</option>';
-      zhVoices.forEach((v) => {
-        const opt = document.createElement('option');
-        opt.value = v.name;
-        opt.textContent = `${v.name} (${v.lang})`;
-        voiceSelect.appendChild(opt);
-      });
-    }
-
-    if ('speechSynthesis' in window) {
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-
-    function getBestVoice(langPrefix) {
-      if (!availableVoices.length && 'speechSynthesis' in window) {
-        availableVoices = window.speechSynthesis.getVoices() || [];
-      }
-      if (langPrefix === 'zh') {
-        const chosenName = voiceSelect.value;
-        if (chosenName) {
-          const found = availableVoices.find(v => v.name === chosenName);
-          if (found) return found;
-        }
-        const preferred = [
-          /HsiaoChen/i, /HsiaoYu/i, /Meijia/i, /Yating/i, /Google.*臺灣/i, /Google.*台灣/i, /Google.*國語/i,
-          /Xiaoxiao/i, /Yunxi/i, /zh-TW/i, /zh_TW/i, /zh-HK/i, /zh-CN/i
-        ];
-        for (const pat of preferred) {
-          const match = availableVoices.find(v => pat.test(v.name) || pat.test(v.lang));
-          if (match) return match;
-        }
-      } else {
-        const enPreferred = [/Natural/i, /Aria/i, /Jenny/i, /Samantha/i, /Google US English/i, /en-US/i, /en-GB/i];
-        for (const pat of enPreferred) {
-          const match = availableVoices.find(v => pat.test(v.name) || pat.test(v.lang));
-          if (match) return match;
-        }
-      }
-      return null;
-    }
+    // Pre-recorded MP3 clips; no browser speech synthesis is used.
+    const player = new Audio();
+    let playbackToken = 0;
+    let activeUrl = null;
+    const packCache = new Map();
+    const mapPromise = fetch('audio-map.json').then(r => {
+      if (!r.ok) throw new Error('無法載入音檔索引');
+      return r.json();
+    });
+    mapPromise.catch(() => {});
 
     function stopSpeech() {
+      playbackToken++;
+      player.pause();
+      player.removeAttribute('src');
+      player.load();
+      if (activeUrl) URL.revokeObjectURL(activeUrl);
+      activeUrl = null;
       isAutoPlaying = false;
       isFrontAutoPlaying = false;
       updateAutoPlayButton();
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
       questionZone.classList.remove('speaking-pulse');
       answerZone.classList.remove('speaking-pulse');
       audioStatusBar.classList.add('hidden');
     }
 
-    function playSoftChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.18);
-      } catch (e) {}
-    }
-
     function speakSegments(segments, onComplete) {
-      if (!('speechSynthesis' in window)) {
-        audioStatusBar.classList.remove('hidden');
-        audioStatusText.textContent = '您的執行環境目前不支援 Web Speech 語音合成 API。';
-        return;
-      }
-      window.speechSynthesis.cancel();
-      playSoftChime();
-
-      const rate = parseFloat(rateSelect.value) || 1.0;
+      const token = ++playbackToken;
+      player.pause();
       let idx = 0;
-
-      function nextSegment() {
+      async function nextSegment() {
+        if (token !== playbackToken) return;
         if (idx >= segments.length) {
           questionZone.classList.remove('speaking-pulse');
           answerZone.classList.remove('speaking-pulse');
-          if (!isAutoPlaying && !isFrontAutoPlaying) {
-            audioStatusBar.classList.add('hidden');
-          }
+          if (!isAutoPlaying && !isFrontAutoPlaying) audioStatusBar.classList.add('hidden');
           if (typeof onComplete === 'function') onComplete();
           return;
         }
-
         const seg = segments[idx++];
-        const utter = new SpeechSynthesisUtterance(seg.text);
-        utter.lang = seg.lang === 'zh' ? 'zh-TW' : 'en-US';
-        utter.rate = rate;
-        utter.pitch = seg.lang === 'zh' ? 1.03 : 1.0;
-
-        const bestVoice = getBestVoice(seg.lang);
-        if (bestVoice) utter.voice = bestVoice;
-
-        utter.onstart = () => {
-          audioStatusBar.classList.remove('hidden');
-          audioStatusText.textContent = seg.label || '正在朗讀...';
-          questionZone.classList.toggle('speaking-pulse', seg.zone === 'q');
-          answerZone.classList.toggle('speaking-pulse', seg.zone === 'a');
-        };
-
-        utter.onend = () => {
-          nextSegment();
-        };
-
-        utter.onerror = () => {
-          nextSegment();
-        };
-
-        window.speechSynthesis.speak(utter);
+        audioStatusBar.classList.remove('hidden');
+        audioStatusText.textContent = '載入 MP3：' + (seg.label || '正在準備播放');
+        questionZone.classList.toggle('speaking-pulse', seg.zone === 'q');
+        answerZone.classList.toggle('speaking-pulse', seg.zone === 'a');
+        try {
+          const map = await mapPromise;
+          const entry = map[seg.lang + ':' + seg.text];
+          if (!entry) throw new Error('找不到對應音檔');
+          const [pack, offset, length] = entry;
+          if (!packCache.has(pack)) {
+            const path = `audio/pack-${String(pack).padStart(2, '0')}.bin`;
+            const promise = fetch(path).then(r => {
+              if (!r.ok) throw new Error('音檔下載失敗');
+              return r.arrayBuffer();
+            });
+            packCache.set(pack, promise);
+            promise.catch(() => packCache.delete(pack));
+          }
+          const bytes = await packCache.get(pack);
+          if (token !== playbackToken) return;
+          if (activeUrl) URL.revokeObjectURL(activeUrl);
+          activeUrl = URL.createObjectURL(new Blob([bytes.slice(offset, offset + length)], { type: 'audio/mpeg' }));
+          player.src = activeUrl;
+          player.playbackRate = parseFloat(rateSelect.value) || 1;
+          player.onended = nextSegment;
+          player.onerror = () => {
+            if (token === playbackToken) audioStatusText.textContent = 'MP3 播放失敗，請檢查網路後再試。';
+          };
+          await player.play();
+          if (token === playbackToken) audioStatusText.textContent = seg.label || '正在播放 MP3';
+        } catch (err) {
+          if (token !== playbackToken) return;
+          isAutoPlaying = false;
+          isFrontAutoPlaying = false;
+          updateAutoPlayButton();
+          audioStatusText.textContent = 'MP3 無法播放，請檢查網路並重新點選播放。';
+        }
       }
-
       nextSegment();
     }
 
@@ -775,7 +706,7 @@
     function buildCardSpeechSegments(card, part) {
       const mode = langModeSelect.value;
       const segs = [];
-      const cleanZhQ = card.q_zh.replace(/^[0-9]+｜/, '第 $& ').replace('｜', '題：');
+      const cleanZhQ = card.q_zh.replace(/^(\d+)｜/, '第 $1題：');
       const cleanZhA = '解答：' + card.a_zh;
 
       if (part === 'q' || part === 'both') {
