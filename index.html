@@ -51,11 +51,12 @@
           🎓
         </div>
         <div>
-          <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight flex items-center gap-2.5">
+          <h1 class="text-base sm:text-lg font-extrabold tracking-tight flex flex-wrap items-center gap-1.5">
             <span>決策管理試題練習</span>
-            <span class="hidden md:inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30">
+            <span class="hidden md:inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30">
               英中專業術語 ＋ 考題與答案同頁 ＋ 語音朗讀
             </span>
+            <button id="read-everything-btn" type="button" class="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-400 text-slate-950 hover:bg-amber-300">🔊朗讀全部試題</button>
           </h1>
         </div>
       </div>
@@ -427,6 +428,7 @@
     let currentIndex = 0;
     let isAutoPlaying = false;
     let isFrontAutoPlaying = false;
+    let isReadingEverything = false;
     let isAnswerHidden = false;
     let isFrontMasked = false;
     let isFrontCollapsed = false;
@@ -451,6 +453,7 @@
     const tabSingle = document.getElementById('tab-single');
     const tabList = document.getElementById('tab-list');
     const tabGithub = document.getElementById('tab-github');
+    const readEverythingBtn = document.getElementById('read-everything-btn');
     const playAllBankBtn = document.getElementById('play-all-bank-btn');
     const viewSingle = document.getElementById('view-single');
     const viewList = document.getElementById('view-list');
@@ -527,13 +530,15 @@
       activeUrl = null;
       isAutoPlaying = false;
       isFrontAutoPlaying = false;
+      isReadingEverything = false;
       updateAutoPlayButton();
       questionZone.classList.remove('speaking-pulse');
       answerZone.classList.remove('speaking-pulse');
       audioStatusBar.classList.add('hidden');
     }
 
-    function speakSegments(segments, onComplete) {
+    function speakSegments(segments, onComplete, allStudy = false) {
+      if (!allStudy && isReadingEverything) { isReadingEverything = false; updateAutoPlayButton(); }
       const token = ++playbackToken;
       player.pause();
       let idx = 0;
@@ -581,6 +586,7 @@
           if (token !== playbackToken) return;
           isAutoPlaying = false;
           isFrontAutoPlaying = false;
+          isReadingEverything = false;
           updateAutoPlayButton();
           audioStatusText.textContent = 'MP3 無法播放，請檢查網路並重新點選播放。';
         }
@@ -771,6 +777,8 @@
     }
 
     function updateAutoPlayButton() {
+      readEverythingBtn.textContent = isReadingEverything ? '⏹ 停止朗讀' : '🔊朗讀全部試題';
+      readEverythingBtn.setAttribute('aria-pressed', String(isReadingEverything));
       playAllBankBtn.textContent = isAutoPlaying ? '⏹ 停止播放' : '▶️ 播放全題庫';
       playAllBankBtn.setAttribute('aria-label', isAutoPlaying ? '停止播放全題庫' : '播放全題庫');
       if (isAutoPlaying) {
@@ -949,6 +957,31 @@
       tabGithub.className = mode === 'github' ? activeCls : inactiveCls;
     }
 
+    readEverythingBtn.addEventListener('click', () => {
+      if (isReadingEverything) { stopSpeech(); return; }
+      stopSpeech();
+      categorySelect.value = 'ALL';
+      searchInput.value = '';
+      applyFilters();
+      switchTab('list');
+      const segments = [];
+      FRONT_HEADINGS.forEach((item, i) => {
+        segments.push({ text: item.en, lang: 'en', label: `🔊 大標題 ${i + 1}/13：${item.en}` });
+        segments.push({ text: item.zh, lang: 'zh', label: `🔊 大標題 ${i + 1}/13：${item.zh}` });
+      });
+      FRONT_TERMS.forEach((item, i) => {
+        segments.push({ text: item.en, lang: 'en', label: `🔊 專業術語 ${i + 1}/19：${item.en}` });
+        segments.push({ text: `${item.zh}。${item.desc}`, lang: 'zh', label: `🔊 專業術語 ${i + 1}/19：${item.zh}` });
+      });
+      ALL_CARDS.forEach(card => segments.push(...buildCardSpeechSegments(card, 'both')));
+      isReadingEverything = true;
+      updateAutoPlayButton();
+      speakSegments(segments, () => {
+        isReadingEverything = false;
+        updateAutoPlayButton();
+        audioStatusBar.classList.add('hidden');
+      }, true);
+    });
     tabSingle.addEventListener('click', () => switchTab('single'));
     tabList.addEventListener('click', () => switchTab('list'));
     playAllBankBtn.addEventListener('click', () => {
