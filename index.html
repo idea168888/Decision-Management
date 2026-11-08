@@ -61,14 +61,17 @@
       </div>
 
       <!-- Mode Switch Tabs -->
-      <div class="flex items-center gap-1.5 bg-slate-900/30 p-1 rounded-xl border border-white/10">
-        <button id="tab-single" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-white text-blue-900 shadow-sm">
+      <div class="flex flex-wrap items-center gap-1 bg-slate-900/30 p-0.5 rounded-xl border border-white/10">
+        <button id="tab-single" class="px-2 py-1 rounded-lg text-xs font-semibold transition bg-white text-blue-900 shadow-sm">
           🗂️ 單頁學習卡
         </button>
-        <button id="tab-list" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10">
+        <button id="tab-list" class="px-2 py-1 rounded-lg text-xs font-semibold transition text-blue-100 hover:bg-white/10">
           📑 全題庫總覽 (同頁展開)
         </button>
-        <button id="tab-github" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10">
+        <button id="play-all-bank-btn" class="px-2 py-1 rounded-lg text-xs font-semibold transition bg-amber-400 text-slate-950 hover:bg-amber-300" type="button" aria-label="播放全題庫">
+          ▶️ 播放全題庫
+        </button>
+        <button id="tab-github" class="px-2 py-1 rounded-lg text-xs font-semibold transition text-blue-100 hover:bg-white/10">
           🚀 免瀏覽器 App 網址 & GitHub
         </button>
       </div>
@@ -448,6 +451,7 @@
     const tabSingle = document.getElementById('tab-single');
     const tabList = document.getElementById('tab-list');
     const tabGithub = document.getElementById('tab-github');
+    const playAllBankBtn = document.getElementById('play-all-bank-btn');
     const viewSingle = document.getElementById('view-single');
     const viewList = document.getElementById('view-list');
     const viewGithub = document.getElementById('view-github');
@@ -767,6 +771,8 @@
     }
 
     function updateAutoPlayButton() {
+      playAllBankBtn.textContent = isAutoPlaying ? '⏹ 停止播放' : '▶️ 播放全題庫';
+      playAllBankBtn.setAttribute('aria-label', isAutoPlaying ? '停止播放全題庫' : '播放全題庫');
       if (isAutoPlaying) {
         autoPlayBtn.textContent = '⏸ 停止自動連播';
         autoPlayBtn.className = 'px-3 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs transition';
@@ -936,8 +942,8 @@
       viewList.classList.toggle('hidden', mode !== 'list');
       viewGithub.classList.toggle('hidden', mode !== 'github');
 
-      const activeCls = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-white text-blue-900 shadow-sm';
-      const inactiveCls = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10';
+      const activeCls = 'px-2 py-1 rounded-lg text-xs font-semibold transition bg-white text-blue-900 shadow-sm';
+      const inactiveCls = 'px-2 py-1 rounded-lg text-xs font-semibold transition text-blue-100 hover:bg-white/10';
       tabSingle.className = mode === 'single' ? activeCls : inactiveCls;
       tabList.className = mode === 'list' ? activeCls : inactiveCls;
       tabGithub.className = mode === 'github' ? activeCls : inactiveCls;
@@ -945,6 +951,15 @@
 
     tabSingle.addEventListener('click', () => switchTab('single'));
     tabList.addEventListener('click', () => switchTab('list'));
+    playAllBankBtn.addEventListener('click', () => {
+      if (isAutoPlaying) { stopSpeech(); return; }
+      stopSpeech();
+      categorySelect.value = 'ALL';
+      searchInput.value = '';
+      applyFilters();
+      switchTab('list');
+      toggleAutoPlayAll();
+    });
     tabGithub.addEventListener('click', () => switchTab('github'));
 
     // Front section controls
