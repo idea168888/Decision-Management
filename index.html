@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="決策管理試題練習" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <title>決策管理試題練習 (Decision Support & Intelligent Systems)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .speaking-pulse {
+      animation: pulse-ring 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(13, 148, 136, 0); }
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: #ffffff; }
+      .print-card-page {
+        page-break-after: always;
+        break-after: page;
+        border: 2px solid #1e3a8a;
+        padding: 28px;
+        margin-bottom: 24px;
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header (Title Updated to: 決策管理試題練習) -->
+  <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-teal-800 text-white shadow-lg sticky top-0 z-30 no-print">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center text-xl font-extrabold shadow-inner">
+          🎓
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight flex items-center gap-2.5">
+            <span>決策管理試題練習</span>
+            <span class="hidden md:inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30">
+              英中專業術語 ＋ 考題與答案同頁 ＋ 語音朗讀
+            </span>
+          </h1>
+          <p class="text-xs text-blue-200">Decision Support and Intelligent Systems • 全教材大標題、英中專業術語與試題完整收錄 (共 113 題)</p>
+        </div>
+      </div>
+
+      <!-- Mode Switch Tabs -->
+      <div class="flex items-center gap-1.5 bg-slate-900/30 p-1 rounded-xl border border-white/10">
+        <button id="tab-single" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-white text-blue-900 shadow-sm">
+          🗂️ 單頁學習卡
+        </button>
+        <button id="tab-list" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10">
+          📑 全題庫總覽 (同頁展開)
+        </button>
+        <button id="tab-github" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10">
+          🚀 免瀏覽器 App 網址 & GitHub
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Audio & Filter Control Bar -->
+  <section class="bg-white border-b border-slate-200 shadow-sm no-print">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      <!-- Category & Search Filter -->
+      <div class="flex flex-wrap items-center gap-2 flex-1">
+        <select id="category-select" aria-label="選擇題庫分類" class="px-3 py-2 rounded-lg border border-slate-300 text-xs sm:text-sm font-medium bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option value="ALL">📚 全部練習內容 (113 題)</option>
+          <option value="一、教材段落大標題">📌 一、教材段落大標題 (13 題)</option>
+          <option value="二、英中專業術語與專有名詞">🔤 二、英中專業術語與專有名詞 (19 題)</option>
+          <option value="三、簡答題">📝 三、核心簡答題 Q1–Q44 (44 題)</option>
+          <option value="四、教材問答題">💡 四、教材問答題 1–37 (37 題)</option>
+          <option value="BOOKMARK">⭐ 已收藏重點題目</option>
+        </select>
+
+        <div class="relative flex-1 min-w-[180px]">
+          <input id="search-input" type="text" placeholder="搜尋關鍵字（如：GDSS、推論引擎、OLAP、第 5 頁）..."
+            class="w-full pl-8 pr-7 py-2 rounded-lg border border-slate-300 text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          <span class="absolute left-2.5 top-2.5 text-slate-400 text-xs">🔍</span>
+          <button id="clear-search-btn" title="清除搜尋" class="hidden absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs px-1">✕</button>
+        </div>
+      </div>
+
+      <!-- Voice / MP3 Audio Engine Controls -->
+      <div class="flex flex-wrap items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-semibold text-slate-600">🎙️ 語音聲線：</span>
+          <select id="voice-select" aria-label="選擇中文語音" class="max-w-[175px] px-2 py-1 rounded border border-slate-300 text-xs bg-white text-slate-700">
+            <option value="">自動優選自然好聽中文女聲</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-semibold text-slate-600">語速：</span>
+          <select id="rate-select" aria-label="選擇語速" class="px-2 py-1 rounded border border-slate-300 text-xs bg-white text-slate-700">
+            <option value="0.85">0.85x 慢速清晰</option>
+            <option value="1.0" selected>1.0x 標準自然</option>
+            <option value="1.15">1.15x 輕快複習</option>
+            <option value="1.3">1.30x 高效衝刺</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-semibold text-slate-600">朗讀模式：</span>
+          <select id="lang-mode-select" aria-label="選擇朗讀語言模式" class="px-2 py-1 rounded border border-slate-300 text-xs bg-white text-slate-700">
+            <option value="bilingual" selected>中英雙語完整朗讀</option>
+            <option value="zh">中文考題＋中文答案</option>
+            <option value="en">英文考題＋英文答案</option>
+          </select>
+        </div>
+
+        <button id="print-pdf-btn" class="ml-auto px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium transition flex items-center gap-1">
+          🖨️ 列印 PDF
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+
+    <!-- Status / Audio Toast Banner -->
+    <div id="audio-status-bar" class="hidden px-4 py-2.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 flex items-center justify-between gap-3 shadow-sm no-print">
+      <div class="flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-teal-600 animate-ping"></span>
+        <span id="audio-status-text">正在為您朗讀...</span>
+      </div>
+      <button id="stop-audio-banner-btn" class="px-2.5 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold transition">
+        ⏹ 停止朗讀
+      </button>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- FRONT SECTION: 新上傳「英中專業術語.pdf」完整練習內容（置於頁面最前方） -->
+    <!-- ========================================================================= -->
+    <section id="front-terminology-section" class="bg-white rounded-2xl shadow-md border-2 border-indigo-900/15 overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-950 via-blue-900 to-teal-800 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md bg-teal-400/20 text-teal-200 border border-teal-300/30 text-xs font-bold">
+              前導核心練習區
+            </span>
+            <h2 class="text-base sm:text-xl font-extrabold tracking-wide">
+              📘 英中專業術語與教材段落大標題練習（源自《英中專業術語.pdf》）
+            </h2>
+          </div>
+          <p class="text-xs text-blue-200 mt-1">
+            置於試題練習最前方 • 每項皆可點擊「🔊 雙語朗讀」聽取正確中英文發音，或開啟「遮罩練習模式」自我檢測
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 no-print">
+          <button id="play-all-front-btn" class="px-3.5 py-2 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow transition flex items-center gap-1.5">
+            ▶️ 連續朗讀本區全部術語
+          </button>
+          <button id="toggle-front-mask-btn" class="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition">
+            👁️ 遮罩中文解釋自測
+          </button>
+          <button id="toggle-front-collapse-btn" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-blue-100 font-semibold text-xs transition">
+            🔼 收合練習區
+          </button>
+        </div>
+      </div>
+
+      <div id="front-section-body" class="p-6 sm:p-8 space-y-8">
+        <!-- Part 1: 一.教材段落大標題 (13 Items) -->
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-blue-900/15 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center">一</span>
+              <h3 class="text-base sm:text-lg font-extrabold text-blue-950">
+                一. 教材段落大標題（共 13 項 • 中英對照與語音練習）
+              </h3>
+            </div>
+            <button id="play-part1-btn" class="px-3 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-xs transition no-print">
+              🔊 朗讀第一部分（大標題 1–13）
+            </button>
+          </div>
+
+          <div id="front-headings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Dynamically populated from front_headings_list -->
+          </div>
+        </div>
+
+        <!-- Part 2: 二.英中專業術語與專有名詞 (19 Items) -->
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-teal-800/20 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-teal-700 text-white font-extrabold text-xs flex items-center justify-center">二</span>
+              <h3 class="text-base sm:text-lg font-extrabold text-teal-950">
+                二. 英中專業術語與專有名詞（共 19 項 • 術語定義同頁對照與語音練習）
+              </h3>
+            </div>
+            <button id="play-part2-btn" class="px-3 py-1 rounded-lg bg-teal-100 hover:bg-teal-200 text-teal-900 font-bold text-xs transition no-print">
+              🔊 朗讀第二部分（專業術語 1–19）
+            </button>
+          </div>
+
+          <div id="front-terms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamically populated from front_terms_list -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: SINGLE FLASHCARD VIEW (Exam Question + Answer on the Same Page)   -->
+    <!-- ========================================================================= -->
+    <section id="view-single" class="space-y-5">
+      <!-- Progress & Quick Jump Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <span id="card-counter-badge" class="px-3 py-1 rounded-lg bg-blue-900 text-white text-xs sm:text-sm font-bold">
+            第 1 / 113 頁
+          </span>
+          <span id="card-category-label" class="text-xs sm:text-sm font-semibold text-slate-600">
+            一、教材段落大標題
+          </span>
+          <span id="card-page-badge" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
+            講義 P.1
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label for="jump-select" class="text-xs text-slate-500 font-medium">快速跳題：</label>
+          <select id="jump-select" class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-medium bg-slate-50 text-slate-800 max-w-[230px]">
+          </select>
+          <button id="bookmark-btn" class="px-3 py-1 rounded-lg border border-slate-300 text-xs font-semibold hover:bg-amber-50 transition">
+            ☆ 收藏本題
+          </button>
+        </div>
+      </div>
+
+      <!-- THE SAME-PAGE FLASHCARD (Question & Answer Together on One Page) -->
+      <div id="flashcard-box" class="bg-white rounded-2xl shadow-md border-2 border-blue-900/15 overflow-hidden transition-all">
+        <!-- Card Top Banner -->
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-800 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div id="card-id-topic" class="text-base sm:text-lg font-bold tracking-wide">
+              Card #001 (H01) — Decision Support and Intelligent Systems
+            </div>
+            <div class="text-xs text-blue-200 mt-0.5">
+              決策管理試題練習 • 考題與答案同頁顯示 • 點擊右側語音按鈕即可用自然好聽的聲音朗讀
+            </div>
+          </div>
+          <!-- Primary Audio Action Buttons on Card -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="speak-both-btn" class="px-3.5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs sm:text-sm shadow transition flex items-center gap-1.5">
+              🔊 朗讀本頁 (題目＋答案)
+            </button>
+            <button id="speak-q-btn" class="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition">
+              🔈 僅念考題
+            </button>
+            <button id="speak-a-btn" class="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition">
+              🔉 僅念答案
+            </button>
+            <button id="auto-play-btn" class="px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition">
+              ▶️ 自動連續播放全部
+            </button>
+          </div>
+        </div>
+
+        <!-- Card Body: QUESTION + ANSWER ON THE SAME PAGE -->
+        <div class="p-6 sm:p-8 space-y-6">
+          <!-- Question Zone -->
+          <div id="question-zone" class="p-5 rounded-xl bg-blue-50/70 border border-blue-200/80 transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded-md">
+                QUESTION / 考題與練習項目
+              </span>
+              <button id="mp3-q-btn" class="text-xs text-blue-700 hover:text-blue-900 font-semibold flex items-center gap-1">
+                🎵 播放考題語音
+              </button>
+            </div>
+            <h2 id="card-q-zh" class="text-xl sm:text-2xl font-bold text-blue-950 leading-snug mb-2">
+            </h2>
+            <p id="card-q-en" class="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
+            </p>
+          </div>
+
+          <!-- Divider with Same-Page Toggle Option -->
+          <div class="flex items-center gap-3">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <button id="toggle-answer-visibility-btn" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+              👁️ 預設同頁顯示答案（點擊可暫時遮罩自我測驗）
+            </button>
+            <div class="h-px bg-slate-200 flex-1"></div>
+          </div>
+
+          <!-- Answer Zone (Always on the same page by default) -->
+          <div id="answer-zone" class="p-5 rounded-xl bg-teal-50/70 border border-teal-200/90 transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-teal-900 bg-teal-200/70 px-2.5 py-0.5 rounded-md">
+                ANSWER / 同頁標準解答
+              </span>
+              <button id="mp3-a-btn" class="text-xs text-teal-800 hover:text-teal-950 font-semibold flex items-center gap-1">
+                🎵 播放解答語音
+              </button>
+            </div>
+            <div id="answer-content-wrapper">
+              <h3 id="card-a-zh" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed mb-2.5">
+              </h3>
+              <p id="card-a-en" class="text-sm sm:text-base text-slate-700 leading-relaxed">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Bottom Navigation Bar -->
+        <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <button id="prev-btn" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-xs sm:text-sm shadow-sm transition">
+              ⬅️ 上一頁 (Prev)
+            </button>
+            <button id="next-btn" class="px-4 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs sm:text-sm shadow-sm transition">
+              下一頁 (Next) ➡️
+            </button>
+            <button id="random-btn" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-medium text-xs sm:text-sm transition">
+              🎲 隨機抽題
+            </button>
+          </div>
+
+          <div class="text-xs text-slate-500 font-medium">
+            ⌨️ 鍵盤快捷鍵：<kbd class="px-1.5 py-0.5 bg-white border rounded">←</kbd> <kbd class="px-1.5 py-0.5 bg-white border rounded">→</kbd> 換頁 • <kbd class="px-1.5 py-0.5 bg-white border rounded">Space</kbd> 語音朗讀本頁
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: ALL CARDS LIST VIEW (Every Card Shows Question & Answer on Same Card) -->
+    <section id="view-list" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">📑 決策管理試題練習 — 全題庫同頁總覽</h2>
+          <p class="text-xs text-slate-500">每張卡片皆在同一頁面呈現考題與完整解答，點擊卡片右上角「🔊 朗讀」即可聽取自然語音。</p>
+        </div>
+        <span id="list-count-badge" class="px-3 py-1 rounded-lg bg-blue-100 text-blue-900 text-xs font-bold">
+          共 113 題
+        </span>
+      </div>
+      <div id="all-cards-container" class="space-y-4"></div>
+    </section>
+
+    <!-- VIEW 3: STANDALONE APP / GITHUB PAGES GUIDE -->
+    <section id="view-github" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+        <div class="border-b border-slate-200 pb-4">
+          <span class="px-2.5 py-1 rounded-md bg-teal-100 text-teal-900 text-xs font-bold">GitHub Pages & 獨立執行指南</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
+            如何將「決策管理試題練習」放到 GitHub 並以獨立 App 視窗開啟？
+          </h2>
+          <p class="text-sm text-slate-600 mt-1">
+            本檔案已命名為 <code class="px-1.5 py-0.5 bg-slate-100 rounded font-mono text-blue-900">index.html</code>，單一檔案完整內建《英中專業術語.pdf》前導練習區與全部 113 題決策管理試題練習卡及雙語語音引擎。
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Step 1: GitHub Pages -->
+          <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-900 text-white text-xs flex items-center justify-center">1</span>
+              <span>上傳 `index.html` 到 GitHub 產生專屬網址</span>
+            </h3>
+            <ol class="text-xs sm:text-sm text-slate-700 space-y-2 list-decimal list-inside leading-relaxed">
+              <li>登入 GitHub，點擊右上角 <strong>+</strong> 號選擇 <strong>New repository</strong>。</li>
+              <li>輸入儲存庫名稱（例如 <code class="bg-white px-1.5 py-0.5 rounded border">decision-practice</code>），勾選 <strong>Public</strong> 並點擊 <strong>Create repository</strong>。</li>
+              <li>點擊 <strong>uploading an existing file</strong>，將本檔案 <code class="bg-white px-1.5 py-0.5 rounded border font-semibold">index.html</code> 拖曳上傳，點擊 <strong>Commit changes</strong>。</li>
+              <li>進入上方 <strong>Settings</strong> ➔ 左側 <strong>Pages</strong>，在 <strong>Branch</strong> 選擇 <code class="bg-white px-1.5 py-0.5 rounded border">main</code> 並按 <strong>Save</strong>。</li>
+              <li>等待約 1 分鐘，即可獲得專屬網址：<br/>
+                <code class="inline-block mt-1 px-2 py-1 bg-blue-950 text-teal-300 rounded font-mono text-xs">https://&lt;您的GitHub帳號&gt;.github.io/decision-practice/</code>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Step 2: Browserless / Standalone App Mode -->
+          <div class="p-5 rounded-xl bg-teal-50/60 border border-teal-200 space-y-3">
+            <h3 class="text-base font-bold text-teal-950 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-teal-700 text-white text-xs flex items-center justify-center">2</span>
+              <span>免開瀏覽器視窗！做成獨立桌面 / 手機 App 捷徑</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              本 <code class="bg-white px-1 py-0.5 rounded border">index.html</code> 已內建 <strong>獨立 Web App (Standalone PWA) 標記</strong>，您可以讓它像原生軟體一樣<strong>不顯示任何瀏覽器網址列或分頁框</strong>直接啟動：
+            </p>
+            <ul class="text-xs sm:text-sm text-slate-700 space-y-2 list-disc list-inside leading-relaxed">
+              <li><strong>手機 / iPad (iOS / Android)</strong>：打開 GitHub Pages 網址後，點選「分享」➔「<strong>加入主畫面 (Add to Home Screen)</strong>」。之後從桌面圖示點擊，就會直接以全螢幕獨立 App 開啟！</li>
+              <li><strong>Windows / Mac 電腦獨立視窗執行</strong>：可建立捷徑或執行指令：<br/>
+                <code id="app-cmd-code" class="inline-block mt-1 px-2 py-1 bg-slate-900 text-amber-300 rounded font-mono text-xs">msedge --app=https://您的帳號.github.io/decision-practice/</code>
+              </li>
+            </ul>
+            <button id="copy-cmd-btn" class="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold transition">
+              📋 複製獨立 App 啟動指令
+            </button>
+            <span id="copy-cmd-feedback" class="hidden text-xs text-teal-800 font-bold ml-2">✓ 已複製！</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500 no-print">
+    決策管理試題練習 (Decision Support and Intelligent Systems) • 英中專業術語與考題解答同頁練習 • 支援自然語音朗讀與 GitHub Pages 部署
+  </footer>
+
+  <script>
+    // Front Section Data from 英中專業術語.pdf
+    const FRONT_HEADINGS = [{"en": "Decision Support and Intelligent Systems", "zh": "決策支援與智慧系統"}, {"en": "Decision Making & Decision Making Stages", "zh": "決策制定與決策制定階段"}, {"en": "Decision Support System, DSS", "zh": "決策支援系統定義與概念"}, {"en": "DSS Types of Decisions", "zh": "DSS 決策類型：結構化、半結構化、非結構化決策"}, {"en": "Decision Support System Models", "zh": "決策支援系統模型：行為、管理科學、作業研究模型"}, {"en": "Benefits of Decision Support System", "zh": "決策支援系統的效益"}, {"en": "Group Decision Support System, GDSS", "zh": "群體決策支援系統與時間/地點環境"}, {"en": "Enterprise & Executive Decision Support System, ESS", "zh": "企業與高階主管決策支援系統"}, {"en": "Data, Information and Knowledge", "zh": "資料、資訊與知識的層級關係"}, {"en": "Knowledge Management & KMS", "zh": "知識管理與知識管理系統生命週期"}, {"en": "Knowledge Based Expert System & Architecture", "zh": "知識型專家系統及其系統架構"}, {"en": "Intelligent System & Artificial Intelligence Domains", "zh": "智慧系統與人工智慧主要領域"}, {"en": "Neural Networks & Virtual Reality", "zh": "類神經網路與虛擬實境應用"}];
+    const FRONT_TERMS = [{"en": "Decision Support System (DSS)", "zh": "決策支援系統", "desc": "一種整合的電腦工具與互動式軟體系統，協助決策者直接與電腦互動，用於辨識與解決半結構化及非結構化問題。"}, {"en": "Intelligence Stage", "zh": "智慧階段", "desc": "決策制定流程的第一階段，主要任務為辨識與理解環境中發生的問題。"}, {"en": "Design Stage", "zh": "設計階段", "desc": "決策制定流程的第二階段，專注於發掘、設計與發展可能的替代解決方案。"}, {"en": "Choice Stage", "zh": "選擇階段", "desc": "決策制定流程的第三階段，評估所有設計好的替代方案並從中做出最佳選擇。"}, {"en": "Implementation Stage", "zh": "實施階段", "desc": "決策制定流程的第四階段，將所選擇的方案付諸實施，並測試解決方案是否有效。"}, {"en": "Structured / Programmed Decisions", "zh": "結構化／程式化決策", "desc": "規則已預先決定且具備特定處理流程的例行性或排程型決策。"}, {"en": "Unstructured / Non-programmed Decisions", "zh": "非結構化／非程式化決策", "desc": "決策規則非固定或預先決定，需透過一般問題解決流程處理，且每次皆需重新經歷決策循環的決策。"}, {"en": "Semi-structured Decisions", "zh": "半結構化決策", "desc": "僅有部分決策程序可事先明確指定，但不足以直接自動導出最終建議決策的情境。"}, {"en": "Group Decision Support System (GDSS)", "zh": "群體決策支援系統", "desc": "結合電腦軟硬體、資料庫與程序，用於支援團隊共同參與、進行協同溝通與集體決策的系統。"}, {"en": "Executive Support System (ESS)", "zh": "高階主管支援系統", "desc": "專為滿足最高階管理階層資訊需求所設計的專用決策支援系統，提供即時資訊存取與圖形化介面。"}, {"en": "Drill Down Reporting", "zh": "向下鑽取報告", "desc": "ESS 的一項重要功能，允許管理者從摘要數據逐步深入調查，以取得更詳細的底層資訊。"}, {"en": "Exception Reporting", "zh": "例外報告", "desc": "一種資訊回報機制，僅針對結果偏離預設標準的例外情況進行報告。"}, {"en": "Knowledge Management (KM)", "zh": "知識管理", "desc": "組織系統性且主動地辨識、創造、儲存、傳播與運用知識資產及專家經驗的流程與策略。"}, {"en": "Expert System (ES)", "zh": "專家系統", "desc": "擷取特定領域人類專家的知識與經驗，並利用人工智慧技術模擬專家思考與推理過程的資訊系統。"}, {"en": "Inference Engine", "zh": "推論引擎", "desc": "專家系統的核心大腦，提供一套針對知識庫內的資訊進行推理並形成結論的方法論。"}, {"en": "Knowledge Engineer", "zh": "知識工程師", "desc": "研究人類專家的思考流程，並將專家知識轉換為電腦可執行的語言與推理架構的專業技術人員。"}, {"en": "Neural Networks", "zh": "類神經網路", "desc": "一套近似人類大腦運作方式的程式與資料結構，特別擅長在複雜資料中辨識細微、隱藏或新出現的模式。"}, {"en": "Data Mining (KDD)", "zh": "資料探勘（資料庫中的知識發現）", "desc": "利用各種分析技術在龐大資料庫中搜尋隱藏的關係、整體模式與決策知識的過程。"}, {"en": "Data Warehouse", "zh": "資料倉儲", "desc": "一個實體資料儲存庫，具備主題導向、整合性、時間變化性與非揮發性等特性，提供全企業標準化且經清理的資料。"}];
+
+    // Embedded 113 Flashcards Data
+    const ALL_CARDS = [{"id": "H01", "category": "一、教材段落大標題", "topic": "Decision Support and Intelligent Systems", "page": "P.1", "q_zh": "教材段落大標題 01：Decision Support and Intelligent Systems 的中文名稱與核心主題為何？", "q_en": "Section Heading 01: Decision Support and Intelligent Systems", "a_zh": "決策支援與智慧系統（涵蓋決策制定、決策支援系統 DSS、群體與高階主管支援系統、知識管理與專家系統、人工智慧、類神經網路、虛擬實境、資料探勘與資料倉儲）。", "a_en": "Decision Support and Intelligent Systems (covering Decision Making, DSS, GDSS, ESS, Knowledge Management, Expert Systems, AI, Neural Networks, VR, Data Mining, and Data Warehousing)."}, {"id": "H02", "category": "一、教材段落大標題", "topic": "Decision Making & Decision Making Stages", "page": "P.2, P.4", "q_zh": "教材段落大標題 02：Decision Making & Decision Making Stages 的中文名稱與四大階段為何？", "q_en": "Section Heading 02: Decision Making & Decision Making Stages", "a_zh": "決策制定與決策制定階段（包含四大階段：Intelligence 智慧階段、Design 設計階段、Choice 選擇階段、Implementation 實施階段）。", "a_en": "Decision Making & Decision Making Stages (Four stages: Intelligence, Design, Choice, and Implementation)."}, {"id": "H03", "category": "一、教材段落大標題", "topic": "Decision Support System, DSS", "page": "P.3, P.5–P.6", "q_zh": "教材段落大標題 03：Decision Support System, DSS 的中文名稱與核心概念為何？", "q_en": "Section Heading 03: Decision Support System, DSS", "a_zh": "決策支援系統定義與概念（一種整合的電腦工具與互動式軟體系統，包含語言系統與問題處理系統，協助決策者處理半結構化及非結構化決策）。", "a_en": "Decision Support System definition and concepts (an integrated set of computer tools and interactive software-based system with a language system and problem-processing system for semi-structured and unstructured decisions)."}, {"id": "H04", "category": "一、教材段落大標題", "topic": "DSS Types of Decisions", "page": "P.7–P.9", "q_zh": "教材段落大標題 04：DSS Types of Decisions 的中文名稱與三種決策類型為何？", "q_en": "Section Heading 04: DSS Types of Decisions", "a_zh": "DSS 決策類型：結構化／程式化決策（Structured / Programmed）、半結構化決策（Semi-structured）、非結構化／非程式化決策（Unstructured / Non-programmed）。", "a_en": "DSS Types of Decisions: Structured / Programmed Decisions, Semistructured Decisions, and Unstructured / Non-programmed Decisions."}, {"id": "H05", "category": "一、教材段落大標題", "topic": "Decision Support System Models", "page": "P.10–P.13", "q_zh": "教材段落大標題 05：Decision Support System Models 的中文名稱與三種模型為何？", "q_en": "Section Heading 05: Decision Support System Models", "a_zh": "決策支援系統模型：行為模型（Behavioural Models）、管理科學模型（Management Science Models）、作業研究模型（Operation Research Models）。", "a_en": "Decision Support System Models: Behavioural Models, Management Science Models, and Operation Research Models."}, {"id": "H06", "category": "一、教材段落大標題", "topic": "Benefits of Decision Support System", "page": "P.14", "q_zh": "教材段落大標題 06：Benefits of Decision Support System 的中文名稱與重點為何？", "q_en": "Section Heading 06: Benefits of Decision Support System", "a_zh": "決策支援系統的效益（透過不同視角檢視資料並察覺問題、評估業務績效與變動影響、分析複雜情境以發展替代方案、快速分析做出更佳決策並控制風險暴露）。", "a_en": "Benefits of Decision Support System (viewing data from different angles, evaluating business performance and change impacts, analyzing complex scenarios to develop alternatives, making faster decisions, and controlling risk exposure)."}, {"id": "H07", "category": "一、教材段落大標題", "topic": "Group Decision Support System, GDSS", "page": "P.15–P.20", "q_zh": "教材段落大標題 07：Group Decision Support System, GDSS 的中文名稱與環境配置為何？", "q_en": "Section Heading 07: Group Decision Support System, GDSS", "a_zh": "群體決策支援系統與時間/地點環境（結合軟硬體、資料庫與程序支援團隊共同決策；具備同時同地、同時異地、異時同地、異時異地四種配置環境）。", "a_en": "Group Decision Support System (GDSS) and Time/Place Environment (Same-Time Same-Place, Same-Time Different-Place, Different-Time Same-Place, Different-Time Different-Place)."}, {"id": "H08", "category": "一、教材段落大標題", "topic": "Enterprise & Executive Decision Support System, ESS", "page": "P.21–P.24", "q_zh": "教材段落大標題 08：Enterprise & Executive Decision Support System, ESS 的中文名稱與核心功能為何？", "q_en": "Section Heading 08: Enterprise & Executive Decision Support System, ESS", "a_zh": "企業與高階主管決策支援系統（支援全企業大量資料複雜分析，以及為最高階主管提供即時資訊存取、管理報告、例外報告 Exception Reporting 與向下鑽取報告 Drill Down Reporting）。", "a_en": "Enterprise & Executive Decision Support System, ESS (supporting enterprise-wide complex data analysis and senior management information needs including Exception Reporting and Drill Down Reporting)."}, {"id": "H09", "category": "一、教材段落大標題", "topic": "Data, Information and Knowledge", "page": "P.25–P.27", "q_zh": "教材段落大標題 09：Data, Information and Knowledge 的中文名稱與層級關係為何？", "q_en": "Section Heading 09: Data, Information and Knowledge", "a_zh": "資料、資訊與知識的層級關係（資料 Data 為孤立無意義的事實；經處理後成為有意義的資訊 Information；再轉化為具情境性、相關性與可行動性的知識 Knowledge）。", "a_en": "Data, Information and Knowledge hierarchy (Data as isolated facts -> processed into Information -> contextual, relevant, and actionable Knowledge)."}, {"id": "H10", "category": "一、教材段落大標題", "topic": "Knowledge Management & KMS", "page": "P.28–P.32", "q_zh": "教材段落大標題 10：Knowledge Management & KMS 的中文名稱與六大生命週期階段為何？", "q_en": "Section Heading 10: Knowledge Management & KMS", "a_zh": "知識管理與知識管理系統生命週期（包含知識生命週期六階段：Create 建立、Store 儲存、Find 尋找、Acquire 取得、Use 使用、Learn 學習）。", "a_en": "Knowledge Management & Knowledge Management System (KMS) Life Cycle (Create, Store, Find, Acquire, Use, and Learn)."}, {"id": "H11", "category": "一、教材段落大標題", "topic": "Knowledge Based Expert System & Architecture", "page": "P.33–P.42", "q_zh": "教材段落大標題 11：Knowledge Based Expert System & Architecture 的中文名稱與架構組件為何？", "q_en": "Section Heading 11: Knowledge Based Expert System & Architecture", "a_zh": "知識型專家系統及其系統架構（包含知識庫 Knowledge Base、推論引擎 Inference Engine、解釋設施 Explanation Facility、使用者介面 User Interface、編輯器 Editor 與知識工程師 Knowledge Engineer）。", "a_en": "Knowledge Based Expert System & Architecture (Knowledge Base, Inference Engine, Explanation Facility, User Interface, Editor, and Knowledge Engineer)."}, {"id": "H12", "category": "一、教材段落大標題", "topic": "Intelligent System & Artificial Intelligence Domains", "page": "P.43–P.46", "q_zh": "教材段落大標題 12：Intelligent System & Artificial Intelligence Domains 的中文名稱與三大領域為何？", "q_en": "Section Heading 12: Intelligent System & Artificial Intelligence Domains", "a_zh": "智慧系統與人工智慧主要領域（涵蓋圖靈測試 Turing Test，以及 AI 三大領域：認知科學 Cognitive science、機器人學 Robotics、自然介面 Natural interfaces）。", "a_en": "Intelligent System & Artificial Intelligence Domains (Turing Test and three major AI domains: Cognitive science, Robotics, and Natural interfaces)."}, {"id": "H13", "category": "一、教材段落大標題", "topic": "Neural Networks & Virtual Reality", "page": "P.47–P.52", "q_zh": "教材段落大標題 13：Neural Networks & Virtual Reality 的中文名稱與典型應用為何？", "q_en": "Section Heading 13: Neural Networks & Virtual Reality", "a_zh": "類神經網路與虛擬實境應用（類神經網路模擬人腦辨識隱藏模式；虛擬實境 VR 應用於危險環境遠端操作、NASA 科學視覺化、3D 虛擬病患醫療研究與飛行模擬器教育訓練）。", "a_en": "Neural Networks & Virtual Reality Applications (Neural networks for pattern recognition; VR for dangerous environments, scientific visualization at NASA, medical 3D virtual patients, and flight simulator training)."}, {"id": "T01", "category": "二、英中專業術語與專有名詞", "topic": "Decision Support System (DSS)", "page": "P.3, P.5", "q_zh": "什麼是「決策支援系統（Decision Support System, DSS）」？", "q_en": "What is a Decision Support System (DSS)?", "a_zh": "一種整合的電腦工具與互動式軟體系統，協助決策者直接與電腦互動，用於辨識與解決半結構化（Semi-structured）及非結構化（Unstructured）問題。", "a_en": "An integrated set of computer tools and interactive software-based system that allows a decision maker to interact directly with computers to identify and solve semi-structured and unstructured problems."}, {"id": "T02", "category": "二、英中專業術語與專有名詞", "topic": "Intelligence Stage", "page": "P.2, P.4", "q_zh": "什麼是決策制定的「智慧階段（Intelligence Stage）」？", "q_en": "What is the Intelligence Stage in decision making?", "a_zh": "決策制定流程的第一階段（問題發現 Problem discovery），主要任務為在環境中辨識與理解發生的問題（What is the problem?）。", "a_en": "The first stage in decision making (Problem discovery: What is the problem?), where the decision maker identifies and understands problems."}, {"id": "T03", "category": "二、英中專業術語與專有名詞", "topic": "Design Stage", "page": "P.2, P.4", "q_zh": "什麼是決策制定的「設計階段（Design Stage）」？", "q_en": "What is the Design Stage in decision making?", "a_zh": "決策制定流程的第二階段（方案發掘 Solution discovery），專注於發掘、設計與發展可能的替代解決方案（What are the possible solutions?）。", "a_en": "The second stage in decision making (Solution discovery: What are the possible solutions?), focusing on designing possible solutions once a problem is perceived."}, {"id": "T04", "category": "二、英中專業術語與專有名詞", "topic": "Choice Stage", "page": "P.2, P.4", "q_zh": "什麼是決策制定的「選擇階段（Choice Stage）」？", "q_en": "What is the Choice Stage in decision making?", "a_zh": "決策制定流程的第三階段（選擇方案 Choosing solutions），根據選擇標準評估所有設計好的替代方案，並從中做出最佳選擇（What is the best solution?）。", "a_en": "The third stage in decision making (Choosing solutions: What is the best solution?), where choices are made about a particular solution."}, {"id": "T05", "category": "二、英中專業術語與專有名詞", "topic": "Implementation Stage", "page": "P.2, P.4", "q_zh": "什麼是決策制定的「實施階段（Implementation Stage）」？", "q_en": "What is the Implementation Stage in decision making?", "a_zh": "決策制定流程的第四階段（方案測試 Solution testing），將所選擇的方案付諸執行與實施，並測試解決方案是否有效及能否改進（Is the solution working? Can we make it work better?）。", "a_en": "The fourth stage in decision making (Solution testing: Is the solution working? Can we make it work better?), where the chosen solution is carried out and implemented."}, {"id": "T06", "category": "二、英中專業術語與專有名詞", "topic": "Structured / Programmed Decisions", "page": "P.7", "q_zh": "什麼是「結構化／程式化決策（Structured / Programmed Decisions）」？", "q_en": "What are Structured / Programmed Decisions?", "a_zh": "決策規則已預先決定（Predetermined），且組織已發展出特定處理流程的例行性或排程型決策（Schedule decisions）。", "a_en": "Schedule decisions where the organization develops a specific process for handling them and the rules of the decision-making system are predetermined."}, {"id": "T07", "category": "二、英中專業術語與專有名詞", "topic": "Unstructured / Non-programmed Decisions", "page": "P.8", "q_zh": "什麼是「非結構化／非程式化決策（Unstructured / Non-programmed Decisions）」？", "q_en": "What are Unstructured / Non-programmed Decisions?", "a_zh": "決策規則非固定或預先決定，需透過一般問題解決流程與決策支援系統（DSS）處理，且每次使用者皆需重新經歷決策制定循環的決策。", "a_en": "Decisions handled by a general problem-solving process and taken by Decision Support Systems, where rules are not fixed or predetermined and the user must go through the decision-making cycle every time."}, {"id": "T08", "category": "二、英中專業術語與專有名詞", "topic": "Semi-structured Decisions", "page": "P.9", "q_zh": "什麼是「半結構化決策（Semi-structured Decisions）」？", "q_en": "What are Semi-structured Decisions?", "a_zh": "僅有部分決策程序可事先明確指定，但不足以直接自動導出最終明確建議決策的情境。", "a_en": "Decisions where some decision procedures can be specified in advance, but not enough to lead to a definite recommended decision."}, {"id": "T09", "category": "二、英中專業術語與專有名詞", "topic": "Group Decision Support System (GDSS)", "page": "P.15, P.18", "q_zh": "什麼是「群體決策支援系統（Group Decision Support System, GDSS）」？", "q_en": "What is a Group Decision Support System (GDSS)?", "a_zh": "結合電腦軟硬體、資料庫與程序，用於支援管理者與員工團隊共同參與、進行協同溝通與集體決策的資訊系統。", "a_en": "An information technology system combining computer hardware, software, databases, and procedures used to support group functions, processes, and decision-making with group participation."}, {"id": "T10", "category": "二、英中專業術語與專有名詞", "topic": "Executive Support System (ESS)", "page": "P.23, P.24", "q_zh": "什麼是「高階主管支援系統（Executive Support System, ESS）」？", "q_en": "What is an Executive Support System (ESS)?", "a_zh": "專為滿足最高階管理階層（Top/Senior executives）資訊需求所設計的專用決策支援系統，提供快速即時資訊存取、直接存取管理報告與直覺圖形化介面。", "a_en": "A specialized computer-based decision support system designed to meet the information needs of top/senior management, providing rapid access to timely information, management reports, and user-friendly graphics."}, {"id": "T11", "category": "二、英中專業術語與專有名詞", "topic": "Drill Down Reporting", "page": "P.24", "q_zh": "什麼是「向下鑽取報告（Drill Down Reporting）」？", "q_en": "What is Drill Down Reporting?", "a_zh": "高階主管支援系統（ESS）的一項重要功能，允許管理者從高層摘要數據逐步深入調查，以取得更詳細的底層細節資訊。", "a_en": "An ESS capability that allows executives to investigate information in increasing detail."}, {"id": "T12", "category": "二、英中專業術語與專有名詞", "topic": "Exception Reporting", "page": "P.24", "q_zh": "什麼是「例外報告（Exception Reporting）」？", "q_en": "What is Exception Reporting?", "a_zh": "一種資訊回報機制，僅針對結果偏離預設標準（Deviate from a set of standards）的例外情況進行報告。", "a_en": "Reporting of only the results that deviate from a set of standards."}, {"id": "T13", "category": "二、英中專業術語與專有名詞", "topic": "Knowledge Management (KM)", "page": "P.28", "q_zh": "什麼是「知識管理（Knowledge Management, KM）」？", "q_en": "What is Knowledge Management (KM)?", "a_zh": "組織系統性且主動地辨識、創造、呈現、儲存、傳播與運用知識資產、洞見及專家經驗的流程與策略。", "a_en": "A range of strategies and practices used in an organization to systematically identify, create, represent, distribute, and leverage stores of knowledge, insights, and expertise."}, {"id": "T14", "category": "二、英中專業術語與專有名詞", "topic": "Expert System (ES)", "page": "P.36", "q_zh": "什麼是「專家系統（Expert System, ES）」？", "q_en": "What is an Expert System (ES)?", "a_zh": "決策支援系統的延伸應用，能擷取特定領域問題解決者或人類專家的知識與經驗，並利用人工智慧技術（Expert system shells）模擬專家的思考過程，供專業度較低的人員使用。", "a_en": "An extension of DSS and an information system application implemented with AI technology that captures the knowledge and expertise of a problem solver and simulates the 'thinking' of that expert for those with less expertise."}, {"id": "T15", "category": "二、英中專業術語與專有名詞", "topic": "Inference Engine", "page": "P.38", "q_zh": "什麼是「推論引擎（Inference Engine）」？", "q_en": "What is an Inference Engine?", "a_zh": "專家系統的核心大腦（Brain of the expert systems），提供一套針對知識庫內的資訊進行推理並推導出結論的方法論。", "a_en": "The brain of the expert system that tries to derive answers from a knowledge base by providing a methodology for reasoning and formulating conclusions."}, {"id": "T16", "category": "二、英中專業術語與專有名詞", "topic": "Knowledge Engineer", "page": "P.39, P.40", "q_zh": "什麼是「知識工程師（Knowledge Engineer）」？", "q_en": "What is a Knowledge Engineer?", "a_zh": "研究人類專家的思考流程，懂得設計與實作結合人工智慧技術的程式，將專家知識轉換為電腦可用語言並設計推論引擎的電腦科學家。", "a_en": "A computer scientist who studies human experts, translates knowledge into a computer-usable language, and designs an inference engine and AI-based expert system programs."}, {"id": "T17", "category": "二、英中專業術語與專有名詞", "topic": "Neural Networks", "page": "P.47", "q_zh": "什麼是「類神經網路（Neural Networks）」？", "q_en": "What are Neural Networks?", "a_zh": "一套近似人類大腦運作方式的程式與資料結構，特別擅長在複雜資料中辨識細微、隱藏或新出現的模式，以及解讀不完整的輸入資料。", "a_en": "A system of programs and data structures that approximates the operation of the human brain, particularly good at recognizing subtle, hidden, and newly emerging patterns within complex data and interpreting incomplete inputs."}, {"id": "T18", "category": "二、英中專業術語與專有名詞", "topic": "Data Mining (KDD)", "page": "P.53, P.54", "q_zh": "什麼是「資料探勘（Data Mining / KDD）」？", "q_en": "What is Data Mining (Knowledge Discovery in Databases, KDD)?", "a_zh": "又稱為資料庫中的知識發現（KDD），指利用各種技術在龐大資料庫中搜尋隱藏的關聯性、全域模式與決策知識，以應用於決策支援、預測與估計。", "a_en": "Also known as Knowledge Discovery in Databases (KDD), it is the search for hidden relationships, global patterns, and decision-making knowledge in large databases for decision support, prediction, and forecasting."}, {"id": "T19", "category": "二、英中專業術語與專有名詞", "topic": "Data Warehouse", "page": "P.59", "q_zh": "什麼是「資料倉儲（Data Warehouse）」？", "q_en": "What is a Data Warehouse?", "a_zh": "一個實體資料儲存庫，將關聯式資料特別組織起來，具備主題導向（Subject-oriented）、整合性（Integrated）、時間變化性（Time-variant）與非揮發性（Non-volatile）等特性，提供全企業標準化且經清理的資料。", "a_en": "A physical repository where relational data are specially organized to provide enterprise-wide, cleansed data in a standardized format, characterized as subject-oriented, integrated, time-variant, and non-volatile."}, {"id": "Q01", "category": "三、簡答題：決策制定階段與決策類型", "topic": "決策制定定義與特性", "page": "P.2", "q_zh": "Q1: 什麼是「決策制定（Decision Making）」？其基本特性為何？", "q_en": "What is Decision Making and what are its basic characteristics?", "a_zh": "決策制定是運用資訊做出決策的過程，它不是一次完成的單一活動，而是由數個在不同時間發生的活動所組成的流程，包含辨識問題、設計方案、選擇方案與執行實施。", "a_en": "Information is used to make decisions. Decision making is not a single activity that takes place all at once; it consists of several activities across different times: identifying problems, designing solutions, making choices, and implementing."}, {"id": "Q02", "category": "三、簡答題：決策制定階段與決策類型", "topic": "決策制定四大階段", "page": "P.2, P.4", "q_zh": "Q2: 請列出決策制定的四大階段（Decision Making Stages）。", "q_en": "What are the four stages in decision making?", "a_zh": "智慧（Intelligence）、設計（Design）、選擇（Choice）、實施（Implementation）。", "a_en": "Intelligence, Design, Choice, and Implementation."}, {"id": "Q03", "category": "三、簡答題：決策制定階段與決策類型", "topic": "智慧階段任務", "page": "P.2, P.4", "q_zh": "Q3: 決策制定的「智慧階段（Intelligence Stage）」主要任務為何？", "q_en": "What is the main task of the Intelligence Stage in decision making?", "a_zh": "進行問題發現（Problem discovery），即在環境中監控、辨識與理解發生的問題（What is the problem?）。", "a_en": "Problem discovery: identifying and understanding what the problem is."}, {"id": "Q04", "category": "三、簡答題：決策制定階段與決策類型", "topic": "設計階段與選擇階段重點", "page": "P.2, P.4", "q_zh": "Q4: 決策制定的「設計階段」與「選擇階段」重點分別為何？", "q_en": "What are the focuses of the Design Stage and Choice Stage?", "a_zh": "設計階段為發掘與發展替代方案（Solution discovery: What are the possible solutions?）；選擇階段為評估並挑選最佳方案（Choosing solutions: What is the best solution?）。", "a_en": "Design stage focuses on solution discovery (possible solutions); Choice stage focuses on choosing the best solution."}, {"id": "Q05", "category": "三、簡答題：決策制定階段與決策類型", "topic": "結構化／程式化決策", "page": "P.7", "q_zh": "Q5: 什麼是「結構化／程式化決策（Structured Decisions）」？", "q_en": "What are Structured / Programmed Decisions?", "a_zh": "規則已預先決定（Predetermined）且組織已有特定例行處理流程的排程型決策（Schedule decisions）。", "a_en": "Schedule decisions where the organization develops a specific process for handling them and decision rules are predetermined."}, {"id": "Q06", "category": "三、簡答題：決策制定階段與決策類型", "topic": "非結構化／非程式化決策", "page": "P.8", "q_zh": "Q6: 什麼是「非結構化／非程式化決策（Unstructured Decisions）」？", "q_en": "What are Unstructured / Non-programmed Decisions?", "a_zh": "規則非固定或預先決定，每次皆需重新經歷完整決策循環的一般問題解決流程，由決策支援系統（DSS）協助決策。", "a_en": "Decisions handled by a general problem-solving process where rules are not fixed or predetermined, requiring the user to go through the decision-making cycle every time."}, {"id": "Q07", "category": "三、簡答題：決策制定階段與決策類型", "topic": "半結構化決策", "page": "P.9", "q_zh": "Q7: 什麼是「半結構化決策（Semi-structured Decisions）」？", "q_en": "What are Semi-structured Decisions?", "a_zh": "僅有部分決策程序可事先明確指定，但不足以直接自動導出最終建議決策的情境。", "a_en": "Decisions where some decision procedures can be specified in advance, but not enough to lead to a definite recommended decision."}, {"id": "Q08", "category": "三、簡答題：決策制定階段與決策類型", "topic": "DSS 核心軟體元件", "page": "P.5", "q_zh": "Q8: 決策支援系統（DSS）包含哪兩個核心軟體元件？", "q_en": "What are the two core software components of a Decision Support System (DSS)?", "a_zh": "語言系統（Language System，讓使用者與 DSS 互動）與問題處理系統（Problem-Processing System）。", "a_en": "A language system (which enables the user to interact with the DSS) and a problem-processing system."}, {"id": "Q09", "category": "三、簡答題：決策制定階段與決策類型", "topic": "DSS 行為模型", "page": "P.11", "q_zh": "Q9: DSS 模型中的「行為模型（Behavioural Models）」主要用途與範例為何？", "q_en": "What are the main uses and examples of Behavioural Models in DSS?", "a_zh": "評估變數間的行為關係與過去及未來的趨勢表現；範例包含趨勢（發展）分析、預測、統計分析模型，以及市場調查中的顧客購買行為問卷電腦化評估。", "a_en": "Used to make decisions for behavioral relationships and trend setting; examples include trend analysis, forecasting, statistical analysis models, and market research customer buying behavior evaluation."}, {"id": "Q10", "category": "三、簡答題：決策制定階段與決策類型", "topic": "DSS 作業研究模型", "page": "P.13", "q_zh": "Q10: DSS 模型中的「作業研究模型（Operation Research Models）」常用何種數學建模技術？", "q_en": "What mathematical modeling technique is commonly used in Operation Research Models?", "a_zh": "線性規劃（Linear Programming），用於引導商業規劃、工業工程及科學領域的量化決策與資源規劃。", "a_en": "Linear Programming, a mathematical modeling technique useful for guiding quantitative decisions in business planning and industrial engineering."}, {"id": "Q11", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "群體決策支援系統 (GDSS)", "page": "P.15", "q_zh": "Q11: 什麼是「群體決策支援系統（GDSS）」？", "q_en": "What is a Group Decision Support System (GDSS)?", "a_zh": "結合電腦軟硬體、資料庫與程序，支援管理者與員工團隊進行集體溝通與共同決策的資訊系統。", "a_en": "Information technology combining computer software and hardware used to support group functions, processes, and decision-making where there is group participation."}, {"id": "Q12", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "高階主管群體決策時間比例", "page": "P.18", "q_zh": "Q12: 高階主管約花費多少比例的時間在群體決策中？", "q_en": "What percentage of time can high-level managers spend making decisions in groups?", "a_zh": "高階主管約花費 80% 的時間在群體中進行決策；正確應用 GDSS 可縮短此時間並更快達成更佳決策。", "a_en": "High-level managers can spend 80% of their time making decisions in groups. Applied correctly, GDSS can reduce this time and arrive at a better decision faster."}, {"id": "Q13", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "GDSS 四大時間與地點環境", "page": "P.17", "q_zh": "Q13: 請列出 GDSS 的四大時間與地點配置環境（Time/Place Environment）。", "q_en": "What are the four GDSS Time/Place Environment configurations?", "a_zh": "同時同地（Same-Time Same-Place）、同時異地（Same-Time Different-Place）、異時同地（Different-Time Same-Place）、異時異地（Different-Time Different-Place）。", "a_en": "Same-Time Same-Place, Same-Time Different-Place, Different-Time Same-Place, and Different-Time Different-Place."}, {"id": "Q14", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "GDSS 平行溝通效益", "page": "P.19", "q_zh": "Q14: GDSS 的「平行溝通（Parallel Communication）」具備何種效益？", "q_en": "What are the benefits of Parallel Communication in GDSS?", "a_zh": "允許成員同時發表意見，消除少數人壟斷發言（Eliminate monopolizing），提高全員參與度並做出更好的決策。", "a_en": "Eliminates monopolizing, providing increased participation and better decisions."}, {"id": "Q15", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "GDSS 主要缺點", "page": "P.20", "q_zh": "Q15: 請列舉 GDSS 的主要缺點。", "q_en": "What are the main disadvantages of GDSS?", "a_zh": "(1) 成本高昂（Cost：軟硬體、會議室與網路連線基礎設施昂貴）；(2) 安全性風險（Security：租用場地或協調員可能外洩資訊）；(3) 技術故障風險（Technical Failure：斷電、斷網，高度依賴頻寬與 LAN/WAN）。", "a_en": "(1) High infrastructure cost (hardware, software, room, network); (2) Security risks (rented facilities or facilitator leaking info); (3) Technical failure (power loss, connectivity loss)."}, {"id": "Q16", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "企業決策支援系統 (Enterprise DSS)", "page": "P.21", "q_zh": "Q16: 什麼是「企業決策支援系統（Enterprise DSS）」？", "q_en": "What is an Enterprise Decision Support System?", "a_zh": "跨學科的組織與系統架構，提供部門資訊科技技術與專案領導，能對全企業龐大資料快速執行複雜分析，以支援關鍵業務決策。", "a_en": "A multi-disciplinary organization and system used by enterprises to quickly perform complex analyses over large amounts of data to inform critical business decisions."}, {"id": "Q17", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "戰略管理層資訊特性", "page": "P.22", "q_zh": "Q17: 戰略管理層（Strategic Management）所需的資訊具有哪些特性？", "q_en": "What are the information characteristics required by Strategic Management?", "a_zh": "臨時性（Ad Hoc）、非排程（Unscheduled）、高度摘要（Summarized）、不常發生（Infrequent）、前瞻性（Forward Looking）、外部性（External）與廣泛範圍（Wide Scope），對應非結構化決策。", "a_en": "Ad Hoc, Unscheduled, Summarized, Infrequent, Forward Looking, External, and Wide Scope (corresponding to Unstructured decisions)."}, {"id": "Q18", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "高階主管支援系統 (ESS)", "page": "P.23, P.24", "q_zh": "Q18: 什麼是「高階主管支援系統（ESS）」？", "q_en": "What is an Executive Support System (ESS)?", "a_zh": "專為最高階主管資訊需求設計的電腦化決策支援系統，提供快速存取即時資訊、直接存取管理報告、直覺友善的圖形介面，並包含分析、通訊、辦公室自動化與智慧支援。", "a_en": "Specialized computer-based DSS designed for top/senior executives, providing rapid access to timely information, direct access to management reports, and user-friendly graphics."}, {"id": "Q19", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "ESS 例外報告", "page": "P.24", "q_zh": "Q19: ESS 中的「例外報告（Exception Reporting）」定義為何？", "q_en": "What is Exception Reporting in ESS?", "a_zh": "系統僅針對結果偏離預設標準（Deviate from a set of standards）的例外狀況進行報告。", "a_en": "Reporting of only the results that deviate from a set of standards."}, {"id": "Q20", "category": "三、簡答題：群體決策、企業與高階主管支援系統", "topic": "ESS 向下鑽取報告", "page": "P.24", "q_zh": "Q20: ESS 中的「向下鑽取報告（Drill Down Reporting）」定義為何？", "q_en": "What is Drill Down Reporting in ESS?", "a_zh": "允許管理者從高層摘要數據逐步深入調查，以取得更詳細的底層細節資訊（Investigating information in increasing detail）。", "a_en": "Investigating information in increasing detail."}, {"id": "Q21", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "資料、資訊與知識的差別", "page": "P.25, P.26, P.27", "q_zh": "Q21: 請說明資料（Data）、資訊（Information）與知識（Knowledge）的定義差別。", "q_en": "What are the differences between Data, Information, and Knowledge?", "a_zh": "資料（Data）為無意義的孤立事實（如單一測量值）；資訊（Information）為經處理後關於情境、人物或事件的事實；知識（Knowledge）為具情境性（Contextual）、相關性（Relevant）與可行動性（Actionable）的經驗與資訊。", "a_en": "Data refers to isolated facts with no meaning on their own; Information is processed data (facts about situations, persons, events); Knowledge is experience—information that is contextual, relevant, and actionable."}, {"id": "Q22", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "知識管理 (KM)", "page": "P.28", "q_zh": "Q22: 什麼是「知識管理（Knowledge Management, KM）」？", "q_en": "What is Knowledge Management (KM)?", "a_zh": "組織系統性且主動地辨識、挑選、創造、組織、儲存、傳播與運用組織記憶中的重要資訊、知識資產與專家經驗的流程與策略。", "a_en": "The process and strategies of systematically and actively identifying, creating, organizing, disseminating, and leveraging stores of knowledge and expertise in an organization."}, {"id": "Q23", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "KMS 生命週期六階段", "page": "P.29, P.30, P.31", "q_zh": "Q23: 請列出「知識管理系統（KMS）」知識生命週期（Knowledge Life Cycle）的六個階段。", "q_en": "What are the six stages of the Knowledge Life Cycle in a Knowledge Management System (KMS)?", "a_zh": "建立（Create）、儲存（Store）、尋找（Find）、取得（Acquire）、使用（Use）、學習（Learn）。", "a_en": "Create, Store, Find, Acquire, Use, and Learn."}, {"id": "Q24", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "知識型系統 (KBS)", "page": "P.33, P.34", "q_zh": "Q24: 什麼是「知識型系統（Knowledge Based System, KBS）」？", "q_en": "What is a Knowledge Based System (KBS)?", "a_zh": "運用人工智慧技術與知識庫中所擷取的人類專家領域知識，來解決通常需要人類專業知識之複雜真實世界問題並產生可解釋方案的電腦程式（比專家系統更廣泛）。", "a_en": "A computer program that uses AI and domain-dependent knowledge of human experts captured in a knowledge base to solve problems within a specialized domain and create an explained solution."}, {"id": "Q25", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "KBS 啟發式方法", "page": "P.34", "q_zh": "Q25: 知識型系統（KBS）主要使用演算法還是啟發式方法？", "q_en": "Does a Knowledge Based System (KBS) primarily use algorithms or heuristics?", "a_zh": "主要使用啟發式（Heuristics，因果關係 cause-and-effect）方法而非傳統固定演算法（Algorithms）來解決真實世界問題。", "a_en": "It uses Heuristics (cause-and-effect) rather than algorithms as real-world problem solvers."}, {"id": "Q26", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "專家系統 (ES)", "page": "P.36", "q_zh": "Q26: 什麼是「專家系統（Expert System, ES）」？", "q_en": "What is an Expert System (ES)?", "a_zh": "決策支援系統的延伸，擷取問題解決者或決策者的知識與專業能力，利用 AI 技術（專家系統外殼 Expert system shells）模擬專家思考方式，以輔助專業度較低的人員。", "a_en": "An extension of DSS implemented with AI technology (expert system shells) that captures the knowledge and expertise of a problem solver and simulates the 'thinking' of that expert for those with less expertise."}, {"id": "Q27", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "專家系統實際應用領域", "page": "P.36", "q_zh": "Q27: 請列舉專家系統（ES）的三項典型實際應用領域與典型任務。", "q_en": "What are three typical application areas and typical tasks of Expert Systems?", "a_zh": "三大實際應用領域：(1) 醫療診斷（Medical Diagnosis）、(2) 電話網路維護（Telephone Network Maintenance）、(3) 常見金屬偵測（Detection of Common Metals）。典型任務包含分類、診斷、監控、設計、排程與規劃。", "a_en": "Application areas: (1) Medical Diagnosis, (2) Telephone Network Maintenance, (3) Detection of Common Metals. Typical tasks: classification, diagnosis, monitoring, design, scheduling, and planning."}, {"id": "Q28", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "推論引擎角色", "page": "P.37, P.38", "q_zh": "Q28: 專家系統架構中的「推論引擎（Inference Engine）」扮演何種角色？", "q_en": "What role does the Inference Engine play in Expert System Architecture?", "a_zh": "專家系統的大腦（Brain of the expert systems），負責從知識庫中推導答案，提供針對知識庫資訊進行推理並形成結論的方法論。", "a_en": "The brain of the expert system that tries to derive answers from a knowledge base, providing a methodology for reasoning and formulating conclusions."}, {"id": "Q29", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "知識工程師與知識工程", "page": "P.39, P.40", "q_zh": "Q29: 什麼是「知識工程師（Knowledge Engineer）」與「知識工程（Knowledge Engineering）」？", "q_en": "What are a Knowledge Engineer and Knowledge Engineering?", "a_zh": "知識工程是設計與建構專家系統的技術；知識工程師則是研究人類專家思考流程，將知識轉譯為電腦可用語言、設計推論引擎並整合不確定知識推理的電腦科學家。", "a_en": "Knowledge Engineering is the art of designing and building expert systems; a Knowledge Engineer is a computer scientist who studies human experts, translates knowledge into computer-usable language, and designs the inference engine."}, {"id": "Q30", "category": "三、簡答題：資料資訊知識與知識管理/專家系統", "topic": "專家系統主要效益", "page": "P.42", "q_zh": "Q30: 請列舉專家系統（ES）的主要效益。", "q_en": "What are the main benefits of an Expert System?", "a_zh": "(1) 提高產出與生產力；(2) 縮短決策時間；(3) 提升流程與產品品質；(4) 減少停機時間；(5) 擷取稀缺專業知識並轉移至遠端；(6) 可在危險環境中作業（無需人類涉險）並處理不完整或不確定資訊。", "a_en": "Increased output/productivity, decreased decision-making time, increased quality, reduced downtime, capture of scarce expertise, operations in hazardous environments, ability to work with incomplete/uncertain information, and knowledge transfer to remote locations."}, {"id": "Q31", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "人工智慧 (AI) 定義與目標", "page": "P.43, P.44", "q_zh": "Q31: 什麼是「人工智慧（Artificial Intelligence, AI）」？其發展目標為何？", "q_en": "What is Artificial Intelligence (AI) and what is its goal?", "a_zh": "結合電腦科學、生物學、心理學、語言學、數學與工程學的科學領域，研究人類思考過程並透過電腦或機器人重現該過程（像人類一樣思考與行動）；目標是開發能思考、看、聽、走、說與感覺的電腦。", "a_en": "A subfield of computer science studying human thought processes and recreating them via machines (thinking and acting like humans); its goal is to develop computers that can think, see, hear, walk, talk, and feel."}, {"id": "Q32", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "圖靈測試 (Turing Test)", "page": "P.43", "q_zh": "Q32: 什麼是「圖靈測試（Turing Test）」？", "q_en": "What is the Turing Test?", "a_zh": "由英國數學家暨 AI 先驅艾倫·圖靈（Alan Turing）命名的人工智慧測試：若人類訪問者同時與看不見的人類及電腦對話，卻無法分辨哪一個是電腦，則該電腦通過測試。", "a_en": "A test for AI named for Alan Turing, in which a human interviewer conversing with both an unseen human and an unseen computer cannot determine which is which."}, {"id": "Q33", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "人工智慧三大主要領域", "page": "P.45, P.46", "q_zh": "Q33: 請列出人工智慧的三大主要領域（Domains of AI）。", "q_en": "What are the three major domains of Artificial Intelligence?", "a_zh": "認知科學（Cognitive science）、機器人學（Robotics）、自然介面（Natural interfaces）。", "a_en": "Cognitive science, Robotics, and Natural interfaces."}, {"id": "Q34", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "AI 認知科學與自然介面應用", "page": "P.45, P.46", "q_zh": "Q34: 人工智慧的「認知科學（Cognitive Science）」與「自然介面（Natural Interfaces）」各包含哪些應用？", "q_en": "What applications are included in Cognitive Science and Natural Interfaces?", "a_zh": "認知科學應用：專家系統、自適應學習系統、模糊邏輯系統、類神經網路、智慧型代理人。自然介面應用：自然語言與語音辨識、與電腦對話並讓其理解、虛擬實境（VR）。", "a_en": "Cognitive science: Expert systems, Adaptive learning systems, Fuzzy logic systems, Neural networks, Intelligent agents. Natural interfaces: Natural language and speech recognition, talking to a computer, Virtual reality."}, {"id": "Q35", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "類神經網路 (Neural Networks)", "page": "P.47", "q_zh": "Q35: 什麼是「類神經網路（Neural Networks）」？", "q_en": "What are Neural Networks?", "a_zh": "近似人類大腦運作方式的程式與資料結構系統，特別擅長在複雜資料中辨識細微、隱藏與新出現的模式，以及解讀不完整的輸入。", "a_en": "A system of programs and data structures approximating the human brain, particularly good at recognizing subtle, hidden, and newly emerging patterns in complex data and interpreting incomplete inputs."}, {"id": "Q36", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "虛擬實境 (Virtual Reality)", "page": "P.48", "q_zh": "Q36: 什麼是「虛擬實境（Virtual Reality, VR）」？", "q_en": "What is Virtual Reality (VR)?", "a_zh": "由互動式電腦模擬所組成的媒介，透過系統將視覺、聽覺、嗅覺、味覺與觸覺等感官資料傳送至大腦，讓使用者看見虛擬世界並產生身歷其境的感覺。", "a_en": "A medium composed of interactive computer simulations feeding sense data (seeing, hearing, smelling, tasting, feeling) to our brain, giving users the feeling of being present in an imaginary simulated world."}, {"id": "Q37", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "危險環境作業與 VR", "page": "P.49", "q_zh": "Q37: 為什麼危險環境作業需要虛擬實境（VR）？", "q_en": "Why is Virtual Reality needed for operations in dangerous environments?", "a_zh": "在放射性、太空或有毒環境中工作的人員，可轉移至安全的 VR 環境中，透過遠端操作（Teleoperation）或遠端臨場（Telepresence）處理危險物質而無實際危險。", "a_en": "Workers in radioactive, space, or toxic environments can be relocated to the safety of a VR environment to handle hazardous materials without real danger using teleoperation or telepresence."}, {"id": "Q38", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "VR 科學視覺化應用", "page": "P.50", "q_zh": "Q38: 虛擬實境在「科學視覺化（Scientific Visualization）」的典型應用範例為何？", "q_en": "What is a typical application of VR in Scientific Visualization?", "a_zh": "提供研究人員運算過程中的即時圖形回饋以引導求解過程；典型範例為 NASA 艾姆斯研究中心（NASA Ames Research Center）的虛擬行星探測（Virtual Planetary Exploration），協助行星地質學家遠端漫遊並分析火星表面地形。", "a_en": "Provides immediate graphical feedback during computations to 'steer' the solution process; e.g., Virtual Planetary Exploration at NASA Ames Research Center for remotely analyzing planetary/Mars terrains."}, {"id": "Q39", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "VR 醫療領域應用", "page": "P.51", "q_zh": "Q39: 虛擬實境在「醫療（Medicine）」領域能帶來什麼新方法？", "q_en": "What new approach does Virtual Reality bring to Medicine?", "a_zh": "改變過往依賴大體解剖與塑膠模型的傳統，透過電腦化 3D 人體模型建立逼真的虛擬病患（含組織學、骨骼結構與完整人體生理模擬）以進行醫學研究與教育實驗。", "a_en": "Computerized 3D human models provide a new approach beyond dissection and plastic models, creating realistic virtual patients with histological, bone, and full physiological simulations for medical research and education."}, {"id": "Q40", "category": "三、簡答題：人工智慧、類神經網路與虛擬實境", "topic": "VR 教育與訓練應用", "page": "P.52", "q_zh": "Q40: 虛擬實境在「教育與訓練」中最常見的應用範例為何？其好處為何？", "q_en": "What is the most common example of VR in Education and Training, and what are its benefits?", "a_zh": "最常見的範例是飛行模擬器（Flight simulator）；好處為操作成本比真實飛機更低、使用更安全，且能模擬真實飛機不允許嘗試的危險情境。", "a_en": "The flight simulator; benefits include lower operating costs, higher safety than real aircraft, and allowing simulation of dangerous scenarios not allowable with real aircraft."}, {"id": "Q41", "category": "三、簡答題：資料探勘、資料倉儲與 OLTP/OLAP（教材 P.53–P.66 補充）", "topic": "KDD 流程步驟", "page": "P.55, P.56", "q_zh": "Q41: 資料庫知識發現（KDD Process）的主要步驟有哪些？哪一步驟最耗費心力？", "q_en": "What are the main steps of a KDD Process, and which step takes the most effort?", "a_zh": "步驟包含：(1) 了解應用領域、(2) 建立目標資料集（資料選擇）、(3) 資料清理與前處理（可能佔 60% 的心力！）、(4) 資料縮減與轉換、(5) 選擇資料探勘功能（摘要、分類、迴歸、關聯、分群）、(6) 選擇探勘演算法、(7) 資料探勘、(8) 模式評估與知識呈現、(9) 運用發現的知識。", "a_en": "Steps: Learning application domain, creating target data set, data cleaning & preprocessing (may take 60% of effort!), data reduction/transformation, choosing data mining functions (summarization, classification, regression, association, clustering), choosing algorithms, data mining, pattern evaluation, and using discovered knowledge."}, {"id": "Q42", "category": "三、簡答題：資料探勘、資料倉儲與 OLTP/OLAP（教材 P.53–P.66 補充）", "topic": "資料探勘商業應用", "page": "P.57, P.58", "q_zh": "Q42: 為什麼需要資料探勘（Data Mining）？其在商業上的三大典型應用為何？", "q_en": "Why is Data Mining necessary, and what are its three typical business applications?", "a_zh": "因為儲存的資料與知識之間存在巨大落差，許多關鍵問題無法僅靠一般資料庫查詢解決。三大應用：(1) 信用評等／目標行銷（找出最不會信用卡違約或最可能回應促銷的名單）；(2) 詐欺偵測（識別異常交易）；(3) 顧客關係管理（找出最忠誠與最可能流失至競爭對手的顧客）。", "a_en": "There is a big gap between stored data and knowledge that simple database queries cannot bridge. Three applications: (1) Credit ratings / targeted marketing, (2) Fraud detection, (3) Customer relationship management (CRM)."}, {"id": "Q43", "category": "三、簡答題：資料探勘、資料倉儲與 OLTP/OLAP（教材 P.53–P.66 補充）", "topic": "資料倉儲四大核心特性", "page": "P.59–P.63", "q_zh": "Q43: 資料倉儲（Data Warehouse）具備哪四大核心特性？", "q_en": "What are the four core characteristics of a Data Warehouse?", "a_zh": "(1) 主題導向（Subject-oriented：圍繞顧客、產品、銷售等主題組織，排除無助決策的日常交易資料）；(2) 整合性（Integrated：整合異質資料來源並統一命名與編碼格式）；(3) 時間變化性（Time-variant：涵蓋 5–10 年歷史觀點，主鍵皆含時間元素）；(4) 非揮發性（Non-volatile：與營運環境實體分離，不執行即時更新，僅需初始載入與資料存取兩種操作）。", "a_en": "(1) Subject-oriented (organized around customer, product, sales), (2) Integrated (consistent naming/encoding from heterogeneous sources), (3) Time-variant (historical 5-10 year perspective, keys contain time), (4) Non-volatile (no operational updates; only initial loading and access of data)."}, {"id": "Q44", "category": "三、簡答題：資料探勘、資料倉儲與 OLTP/OLAP（教材 P.53–P.66 補充）", "topic": "OLTP 與 OLAP 比較", "page": "P.64–P.66", "q_zh": "Q44: 請比較線上交易處理（OLTP）與線上分析處理（OLAP）的差異。", "q_en": "Compare Online Transaction Processing (OLTP) and Online Analytical Processing (OLAP).", "a_zh": "OLTP（線上交易處理）是傳統關聯式資料庫的主要任務，處理採購、庫存、帳務等日常營運，特點為大量簡短交易、存取少量資料、更新頻繁、並行控制最重要（提供資料倉儲來源資料）；OLAP（線上分析處理）是資料倉儲系統的主要任務，用於資料分析與決策制定，特點為長交易與複雜查詢、存取龐大資料、更新不頻繁。", "a_en": "OLTP handles day-to-day operations (many short transactions, small data per query, frequent updates, concurrency concern) and feeds data warehouses; OLAP is the major task of data warehouses for data analysis and decision making (long transactions, complex queries touching large data, infrequent updates)."}, {"id": "W01", "category": "四、教材問答題：決策制定", "topic": "決策制定活動本質", "page": "第 2 頁", "q_zh": "1｜決策制定是否是一次完成的單一活動？", "q_en": "Is decision making a single activity that takes place all at once?", "a_zh": "資訊被用來做出決策。決策制定並不是一次完成的單一活動。（第 2 頁）", "a_en": "Information is used to make decisions. Decision making is not a single activity that takes place all at once. (Page 2)"}, {"id": "W02", "category": "四、教材問答題：決策制定", "topic": "決策者首要任務", "page": "第 2 頁", "q_zh": "2｜決策者首先必須做什麼？", "q_en": "What must the decision maker do first?", "a_zh": "決策者必須辨識並理解問題。（第 2 頁）", "a_en": "The decision maker has to identify and understand problems. (Page 2)"}, {"id": "W03", "category": "四、教材問答題：決策制定", "topic": "察覺問題後的流程", "page": "第 2 頁", "q_zh": "3｜察覺問題後，接下來的決策流程是什麼？", "q_en": "Once a problem is perceived, what is the subsequent decision-making process?", "a_zh": "一旦察覺問題，就必須設計解決方案；方案設計完成後，必須針對特定方案做出選擇；最後，還必須執行並實施該方案。（第 2 頁）", "a_en": "Once perceived, solutions must be designed; once solutions are designed, choices have to be made about a particular solution; finally, the solution has to be carried out and implemented. (Page 2)"}, {"id": "W04", "category": "四、教材問答題：決策制定", "topic": "決策制定的四個階段", "page": "第 2 頁", "q_zh": "4｜決策制定的四個階段是什麼？", "q_en": "What are the four different stages in decision making?", "a_zh": "智慧（Intelligence）、設計（Design）、選擇（Choice）、實施（Implement）。（第 2 頁）", "a_en": "Four different stages in decision making are: Intelligence, Design, Choice, Implement. (Page 2)"}, {"id": "W05", "category": "四、教材問答題：決策制定", "topic": "反覆經歷各階段", "page": "第 3 頁", "q_zh": "5｜尋找滿意的解決方案時，需要如何進行各階段？", "q_en": "How should the stages be carried out to find a satisfactory solution?", "a_zh": "必須反覆經歷這些階段，直到找到令人滿意的解決方案為止。（第 3 頁）", "a_en": "It is required to go through these phases again and again till the satisfactory solution is found. (Page 3)"}, {"id": "W06", "category": "四、教材問答題：決策制定", "topic": "選擇標準的差異性", "page": "第 3 頁", "q_zh": "6｜選擇標準是否對所有問題都相同？", "q_en": "Is the choice of selection criteria the same for all problems?", "a_zh": "選擇標準會因問題不同而有所差異。（第 3 頁）", "a_en": "The choice of selection criteria varies from problem to problem. (Page 3)"}, {"id": "W07", "category": "四、教材問答題：決策支援系統與模型", "topic": "決策支援系統定義", "page": "第 5 頁", "q_zh": "7｜什麼是決策支援系統（DSS）？", "q_en": "What is a Decision Support System (DSS)?", "a_zh": "決策支援系統（DSS）是一組整合的電腦工具，讓決策者可以直接與電腦互動，以建立有用的資訊，並協助處理半結構化與非結構化決策。（第 5 頁）", "a_en": "A decision support system is an integrated set of computer tools that allows a decision maker to interact directly with computers to create information and is useful in making semi-structured and unstructured decisions. (Page 5)"}, {"id": "W08", "category": "四、教材問答題：決策支援系統與模型", "topic": "設計完善的 DSS 目的", "page": "第 5 頁", "q_zh": "8｜設計完善的 DSS 有什麼目的？", "q_en": "What is the purpose of a properly designed DSS?", "a_zh": "設計完善的 DSS 是一種互動式、以軟體為基礎的系統，旨在協助決策者辨識與解決問題並做出決策。（第 5 頁）", "a_en": "A properly designed DSS is an interactive software-based system planned to help decision makers identify and solve problems and make decisions. (Page 5)"}, {"id": "W09", "category": "四、教材問答題：決策支援系統與模型", "topic": "DSS 的軟體元件", "page": "第 5 頁", "q_zh": "9｜DSS 的軟體元件包括什麼？", "q_en": "What are the software components for decision-support systems?", "a_zh": "軟體元件包括讓使用者與 DSS 互動的語言系統，以及問題處理系統。（第 5 頁）", "a_en": "The software components for decision-support systems are a language system which enables the user to interact with the DSS, and a problem-processing system. (Page 5)"}, {"id": "W10", "category": "四、教材問答題：決策支援系統與模型", "topic": "DSS 服務的組織層級", "page": "第 6 頁", "q_zh": "10｜DSS 可服務組織的哪些層級？", "q_en": "Which levels of an organization do DSS serve?", "a_zh": "DSS 可服務組織的管理、營運與規劃層級，並協助處理可能快速變化且難以事先明確定義的決策。（第 6 頁）", "a_en": "DSS serve the management, operations, and planning levels of an organization and help to make decisions which may be rapidly changing and not easily specified in advance. (Page 6)"}, {"id": "W11", "category": "四、教材問答題：決策支援系統與模型", "topic": "結構化／程式化決策特徵", "page": "第 7 頁", "q_zh": "11｜結構化／程式化決策的特徵是什麼？", "q_en": "What are the characteristics of Structured / Programmed Decisions?", "a_zh": "排程型決策；組織會發展特定的處理流程；決策制定系統的規則已預先決定。（第 7 頁）", "a_en": "Schedule decisions; Organization develops specific process for handling; Rules of decision making system are predetermined. (Page 7)"}, {"id": "W12", "category": "四、教材問答題：決策支援系統與模型", "topic": "非結構化／非程式化決策描述", "page": "第 8 頁", "q_zh": "12｜描述非結構化／非程式化決策？", "q_en": "Describe Unstructured / Non-programmed Decisions.", "a_zh": "規則非預先決定；由決策支援系統協助做出決策；決策制定系統的規則並非固定或預先決定；每次都需要使用者重新經歷決策制定循環；在可程式化的決策情境中，可以建立決策支援系統。（第 8 頁）", "a_en": "Handled by general problem solving process; Decision taken by DSS; Rules are not fixed or predetermined; Requires every time the user to go through the decision-making cycle; DSS can be built in case of programmable decision situation. (Page 8)"}, {"id": "W13", "category": "四、教材問答題：決策支援系統與模型", "topic": "半結構化決策定義", "page": "第 9 頁", "q_zh": "13｜什麼是半結構化決策？", "q_en": "What are Semistructured Decisions?", "a_zh": "某些決策程序可以事先指定，但不足以導出明確的建議決策。（第 9 頁）", "a_en": "Some decision procedures can be specified in advance, but not enough to lead to a definite recommended decision. (Page 9)"}, {"id": "W14", "category": "四、教材問答題：決策支援系統與模型", "topic": "DSS 模型的三種類型", "page": "第 10 頁", "q_zh": "14｜DSS 模型的三種類型是什麼？", "q_en": "What are the three types of Decision Support System Models?", "a_zh": "行為模型（Behavioural Models）、管理科學模型（Management Science Models）、作業研究模型（Operation Research Models）。（第 10 頁）", "a_en": "Behavioural Models, Management Science Models, and Operation Research Models. (Page 10)"}, {"id": "W15", "category": "四、教材問答題：決策支援系統與模型", "topic": "行為模型的例子", "page": "第 11 頁", "q_zh": "15｜行為模型有哪些例子？", "q_en": "What are examples of Behavioural Models?", "a_zh": "趨勢（發展）分析、預測與統計分析模型。（第 11 頁）", "a_en": "The trend (development) analysis, forecasting and statistical analysis models. (Page 11)"}, {"id": "W16", "category": "四、教材問答題：決策支援系統與模型", "topic": "管理科學模型建立原理", "page": "第 12 頁", "q_zh": "16｜管理科學模型依據哪些原理建立？", "q_en": "On what principles are Management Science Models developed?", "a_zh": "這些模型依據企業管理、會計與經濟學原理建立。（第 12 頁）", "a_en": "These models are developed on the principles of business management, accounting and economics. (Page 12)"}, {"id": "W17", "category": "四、教材問答題：決策支援系統與模型", "topic": "管理科學模型的例子", "page": "第 12 頁", "q_zh": "17｜管理科學模型有哪些例子？", "q_en": "What are examples of Management Science Models?", "a_zh": "預算系統、成本會計系統、庫存管理系統（例如：銷售預算、生產預算）。（第 12 頁）", "a_en": "The budgetary systems, cost accounting system, inventory management system (e.g., Sales Budget, Production Budget). (Page 12)"}, {"id": "W18", "category": "四、教材問答題：決策支援系統與模型", "topic": "作業研究模型的用途", "page": "第 13 頁", "q_zh": "18｜作業研究模型有什麼用途？", "q_en": "What is the purpose of Operation Research Models?", "a_zh": "作業研究模型是數學模型，用於根據目前資訊為管理者提供有效決策的指引；若目前知識不足，也可協助尋找進一步資訊。（第 13 頁）", "a_en": "Operation Research models are mathematical models providing guidelines to managers for making effective decisions within the state of current information, or seeking further information if current knowledge is insufficient. (Page 13)"}, {"id": "W19", "category": "四、教材問答題：決策支援系統與模型", "topic": "線性規劃定義", "page": "第 13 頁", "q_zh": "19｜線性規劃是什麼？", "q_en": "What is Linear Programming?", "a_zh": "線性規劃（Linear Programming）是一種數學建模技術，可用於引導企業規劃、工業工程，以及較少程度上的社會與自然科學中的量化決策。（第 13 頁）", "a_en": "Linear Programming is a mathematical modeling technique useful for guiding quantitative decisions in business planning, industrial engineering, and to a lesser extent in the social and physical sciences. (Page 13)"}, {"id": "W20", "category": "四、教材問答題：決策支援系統與模型", "topic": "DSS 協助處理複雜問題", "page": "第 14 頁", "q_zh": "20｜DSS 可以如何協助處理複雜問題？", "q_en": "How can DSS help handle complex problems?", "a_zh": "能查看複雜情境或問題，進行分析並發展替代方案以解決問題。（第 14 頁）", "a_en": "Ability to view the complex scenario or problem and to analyze it and develop alternatives to solve the problem. (Page 14)"}, {"id": "W21", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "群體決策支援系統定義", "page": "第 15 頁", "q_zh": "21｜什麼是群體決策支援系統（GDSS）？", "q_en": "What is a Group Decision Support System (GDSS)?", "a_zh": "資訊科技支援有群體參與的決策制定，這類系統稱為群體決策支援系統（GDSS）。（第 15 頁）", "a_en": "Information technology supports decision-making where there is group participation. Such decision support system is called Group Decision Support Systems (GDSS). (Page 15)"}, {"id": "W22", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "GDSS 支援的人員", "page": "第 15 頁", "q_zh": "22｜GDSS 支援哪些人員？", "q_en": "Who does GDSS support?", "a_zh": "GDSS 支援管理者與員工以群體方式工作。（第 15 頁）", "a_en": "GDSS supports Manager and Staff working in groups. (Page 15)"}, {"id": "W23", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "GDSS 提供的資源", "page": "第 18 頁", "q_zh": "23｜GDSS 提供哪些有效決策所需的資源？", "q_en": "What resources does GDSS provide for effective decision making?", "a_zh": "GDSS 提供有效決策所需的硬體、軟體、資料庫與程序。（第 18 頁）", "a_en": "GDSS provides the hardware, software, databases and procedures for effective decision making. (Page 18)"}, {"id": "W24", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "平行溝通的優點", "page": "第 19 頁", "q_zh": "24｜平行溝通有什麼優點？", "q_en": "What are the advantages of Parallel Communication in GDSS?", "a_zh": "平行溝通（Parallel Communication）－避免少數人壟斷發言，提高參與程度，促成更好的決策。（第 19 頁）", "a_en": "Parallel Communication – eliminate monopolizing, providing increased participation, better decisions. (Page 19)"}, {"id": "W25", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "自動化紀錄的優點", "page": "第 19 頁", "q_zh": "25｜GDSS 的自動化紀錄有什麼優點？", "q_en": "What is the advantage of Automated record keeping in GDSS?", "a_zh": "自動化紀錄（Automated record keeping）－不需要手動做筆記，系統會自動記錄。（第 19 頁）", "a_en": "Automated record keeping – no need to take notes, they’re automatically recorded. (Page 19)"}, {"id": "W26", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "GDSS 的缺點", "page": "第 20 頁", "q_zh": "26｜GDSS 有哪些缺點？", "q_en": "What are the disadvantages of GDSS?", "a_zh": "成本（Cost）、安全性（Security）、技術故障（Technical Failure）。（第 20 頁各項標題）", "a_en": "Cost, Security, and Technical Failure. (Page 20)"}, {"id": "W27", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "高階主管決策支援系統功能", "page": "第 23 頁", "q_zh": "27｜高階主管決策支援系統提供哪些功能？", "q_en": "What does an Executive Decision Support System provide for?", "a_zh": "快速取得即時資訊、直接存取管理報告，以及非常容易使用且以圖形方式支援的功能。（第 23 頁節錄）", "a_en": "Rapid access to timely information; Direct access to management reports; Very user friendly and supported by graphics. (Page 23)"}, {"id": "W28", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "例外報告定義", "page": "第 24 頁", "q_zh": "28｜什麼是例外報告？", "q_en": "What is Exception reporting?", "a_zh": "只報告偏離既定標準的結果。（第 24 頁）", "a_en": "Exception reporting – reporting of only the results that deviate from a set of standards. (Page 24)"}, {"id": "W29", "category": "四、教材問答題：群體決策與高階主管支援", "topic": "向下鑽取報告定義", "page": "第 24 頁", "q_zh": "29｜什麼是向下鑽取報告？", "q_en": "What is Drill down reporting?", "a_zh": "逐步深入調查資訊，以取得更詳細內容。（第 24 頁）", "a_en": "Drill down reporting – investigating information in increasing detail. (Page 24)"}, {"id": "W30", "category": "四、教材問答題：知識管理與專家系統", "topic": "知識的定義", "page": "第 25 頁", "q_zh": "30｜教材如何定義知識？", "q_en": "How does the textbook define Knowledge?", "a_zh": "知識是具有情境性、相關性與可行動性的資訊。（第 25 頁）", "a_en": "Knowledge is information that is contextual, relevant, and actionable. (Page 25)"}, {"id": "W31", "category": "四、教材問答題：知識管理與專家系統", "topic": "資料的定義", "page": "第 27 頁", "q_zh": "31｜教材如何定義資料？", "q_en": "How does the textbook define Data?", "a_zh": "資料：指孤立的事實，例如單一測量值；資料本身沒有意義。（第 27 頁）", "a_en": "Data refers to isolated facts such as individual measurement; no meaning on their own. (Page 27)"}, {"id": "W32", "category": "四、教材問答題：知識管理與專家系統", "topic": "知識管理（KM）定義", "page": "第 28 頁", "q_zh": "32｜知識管理（KM）是什麼？", "q_en": "What is Knowledge Management (KM)?", "a_zh": "KM 是在組織中系統性且主動地管理與運用知識資產的流程。（第 28 頁）", "a_en": "KM is the process of systematically and actively managing and leveraging stores of knowledge in an organization. (Page 28)"}, {"id": "W33", "category": "四、教材問答題：知識管理與專家系統", "topic": "知識管理系統支援的工作", "page": "第 29 頁", "q_zh": "33｜知識管理系統支援哪些工作？", "q_en": "What does a Knowledge Management System support?", "a_zh": "知識管理系統通常以資訊科技（IT）為基礎，用於管理組織中的知識，以支援資訊的創造、擷取、儲存與分配。（第 29 頁）", "a_en": "Knowledge Management System refers to a (generally IT based) system for managing knowledge in organizations for supporting creation, capture, storage and distribution of information. (Page 29)"}, {"id": "W34", "category": "四、教材問答題：知識管理與專家系統", "topic": "知識管理系統的六個活動", "page": "第 30～31 頁", "q_zh": "34｜知識管理系統的六個活動是什麼？", "q_en": "What are the six activities of a Knowledge Management System?", "a_zh": "建立（Create）、儲存（Store）、尋找（Find）、取得（Acquire）、使用（Use）、學習（Learn）。（第 30～31 頁各項標題）", "a_en": "Create, Store, Find, Acquire, Use, and Learn. (Pages 30–31)"}, {"id": "W35", "category": "四、教材問答題：知識管理與專家系統", "topic": "專家系統描述", "page": "第 36 頁", "q_zh": "35｜教材如何描述專家系統？", "q_en": "How does the textbook describe an Expert System?", "a_zh": "專家系統是一種資訊系統應用，能擷取問題解決者或決策者的知識與專業能力，模擬該專家的「思考方式」，提供給專業程度較低的人員使用。（第 36 頁）", "a_en": "Expert system is an information system application that captures the knowledge and expertise of a problem solver or decision maker, and then simulates the 'thinking' of that expert for those who have less expertise. (Page 36)"}, {"id": "W36", "category": "四、教材問答題：知識管理與專家系統", "topic": "推論引擎的作用", "page": "第 38 頁", "q_zh": "36｜推論引擎的作用是什麼？", "q_en": "What does an Inference Engine do?", "a_zh": "推論引擎嘗試從知識庫中推導出答案。（第 38 頁）", "a_en": "An inference engine tries to derive answers from a knowledge base. (Page 38)"}, {"id": "W37", "category": "四、教材問答題：知識管理與專家系統", "topic": "使用者介面的作用", "page": "第 38 頁", "q_zh": "37｜使用者介面的作用是什麼？", "q_en": "What is the role of the User Interface in an expert system?", "a_zh": "使用者介面－讓使用者能夠與專家系統溝通。（第 38 頁）", "a_en": "User Interface – It enables the user to communicate with an expert system. (Page 38)"}];
+
+    // Application State
+    let filteredCards = [...ALL_CARDS];
+    let currentIndex = 0;
+    let isAutoPlaying = false;
+    let isFrontAutoPlaying = false;
+    let isAnswerHidden = false;
+    let isFrontMasked = false;
+    let isFrontCollapsed = false;
+    let bookmarks = new Set();
+    let availableVoices = [];
+
+    // Safe localStorage load for bookmarks
+    try {
+      const saved = localStorage.getItem('dm_flashcards_bookmarks');
+      if (saved) {
+        bookmarks = new Set(JSON.parse(saved));
+      }
+    } catch (e) {}
+
+    function saveBookmarks() {
+      try {
+        localStorage.setItem('dm_flashcards_bookmarks', JSON.stringify([...bookmarks]));
+      } catch (e) {}
+    }
+
+    // DOM Elements
+    const tabSingle = document.getElementById('tab-single');
+    const tabList = document.getElementById('tab-list');
+    const tabGithub = document.getElementById('tab-github');
+    const viewSingle = document.getElementById('view-single');
+    const viewList = document.getElementById('view-list');
+    const viewGithub = document.getElementById('view-github');
+
+    const frontSectionBody = document.getElementById('front-section-body');
+    const frontHeadingsGrid = document.getElementById('front-headings-grid');
+    const frontTermsGrid = document.getElementById('front-terms-grid');
+    const playAllFrontBtn = document.getElementById('play-all-front-btn');
+    const playPart1Btn = document.getElementById('play-part1-btn');
+    const playPart2Btn = document.getElementById('play-part2-btn');
+    const toggleFrontMaskBtn = document.getElementById('toggle-front-mask-btn');
+    const toggleFrontCollapseBtn = document.getElementById('toggle-front-collapse-btn');
+
+    const categorySelect = document.getElementById('category-select');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const voiceSelect = document.getElementById('voice-select');
+    const rateSelect = document.getElementById('rate-select');
+    const langModeSelect = document.getElementById('lang-mode-select');
+    const printPdfBtn = document.getElementById('print-pdf-btn');
+
+    const audioStatusBar = document.getElementById('audio-status-bar');
+    const audioStatusText = document.getElementById('audio-status-text');
+    const stopAudioBannerBtn = document.getElementById('stop-audio-banner-btn');
+
+    const cardCounterBadge = document.getElementById('card-counter-badge');
+    const cardCategoryLabel = document.getElementById('card-category-label');
+    const cardPageBadge = document.getElementById('card-page-badge');
+    const jumpSelect = document.getElementById('jump-select');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    const cardIdTopic = document.getElementById('card-id-topic');
+    const cardQZh = document.getElementById('card-q-zh');
+    const cardQEn = document.getElementById('card-q-en');
+    const cardAZh = document.getElementById('card-a-zh');
+    const cardAEn = document.getElementById('card-a-en');
+    const questionZone = document.getElementById('question-zone');
+    const answerZone = document.getElementById('answer-zone');
+    const answerContentWrapper = document.getElementById('answer-content-wrapper');
+    const toggleAnswerVisibilityBtn = document.getElementById('toggle-answer-visibility-btn');
+
+    const speakBothBtn = document.getElementById('speak-both-btn');
+    const speakQBtn = document.getElementById('speak-q-btn');
+    const speakABtn = document.getElementById('speak-a-btn');
+    const mp3QBtn = document.getElementById('mp3-q-btn');
+    const mp3ABtn = document.getElementById('mp3-a-btn');
+    const autoPlayBtn = document.getElementById('auto-play-btn');
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const randomBtn = document.getElementById('random-btn');
+
+    const allCardsContainer = document.getElementById('all-cards-container');
+    const listCountBadge = document.getElementById('list-count-badge');
+    const copyCmdBtn = document.getElementById('copy-cmd-btn');
+    const copyCmdFeedback = document.getElementById('copy-cmd-feedback');
+
+    // Initialize Voices (prioritizing natural Neural / Google / Microsoft Mandarin & English voices)
+    function loadVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const rawVoices = window.speechSynthesis.getVoices() || [];
+      if (!rawVoices.length) return;
+      availableVoices = rawVoices;
+
+      const zhVoices = rawVoices.filter(v => /zh|cmn|chi/i.test(v.lang) || /Chinese|Taiwan|Mandarin|國語|台灣/i.test(v.name));
+      zhVoices.sort((a, b) => {
+        const score = (v) => {
+          let s = 0;
+          if (/TW|Hant|Taiwan|台灣/i.test(v.lang + v.name)) s += 50;
+          if (/Natural|Neural|Online|HsiaoChen|HsiaoYu|Yating|Meijia|Google/i.test(v.name)) s += 40;
+          return s;
+        };
+        return score(b) - score(a);
+      });
+
+      voiceSelect.innerHTML = '<option value="">✨ 自動優選自然好聽中文語音</option>';
+      zhVoices.forEach((v) => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        voiceSelect.appendChild(opt);
+      });
+    }
+
+    if ('speechSynthesis' in window) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function getBestVoice(langPrefix) {
+      if (!availableVoices.length && 'speechSynthesis' in window) {
+        availableVoices = window.speechSynthesis.getVoices() || [];
+      }
+      if (langPrefix === 'zh') {
+        const chosenName = voiceSelect.value;
+        if (chosenName) {
+          const found = availableVoices.find(v => v.name === chosenName);
+          if (found) return found;
+        }
+        const preferred = [
+          /HsiaoChen/i, /HsiaoYu/i, /Meijia/i, /Yating/i, /Google.*臺灣/i, /Google.*台灣/i, /Google.*國語/i,
+          /Xiaoxiao/i, /Yunxi/i, /zh-TW/i, /zh_TW/i, /zh-HK/i, /zh-CN/i
+        ];
+        for (const pat of preferred) {
+          const match = availableVoices.find(v => pat.test(v.name) || pat.test(v.lang));
+          if (match) return match;
+        }
+      } else {
+        const enPreferred = [/Natural/i, /Aria/i, /Jenny/i, /Samantha/i, /Google US English/i, /en-US/i, /en-GB/i];
+        for (const pat of enPreferred) {
+          const match = availableVoices.find(v => pat.test(v.name) || pat.test(v.lang));
+          if (match) return match;
+        }
+      }
+      return null;
+    }
+
+    function stopSpeech() {
+      isAutoPlaying = false;
+      isFrontAutoPlaying = false;
+      updateAutoPlayButton();
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      questionZone.classList.remove('speaking-pulse');
+      answerZone.classList.remove('speaking-pulse');
+      audioStatusBar.classList.add('hidden');
+    }
+
+    function playSoftChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.18);
+      } catch (e) {}
+    }
+
+    function speakSegments(segments, onComplete) {
+      if (!('speechSynthesis' in window)) {
+        audioStatusBar.classList.remove('hidden');
+        audioStatusText.textContent = '您的執行環境目前不支援 Web Speech 語音合成 API。';
+        return;
+      }
+      window.speechSynthesis.cancel();
+      playSoftChime();
+
+      const rate = parseFloat(rateSelect.value) || 1.0;
+      let idx = 0;
+
+      function nextSegment() {
+        if (idx >= segments.length) {
+          questionZone.classList.remove('speaking-pulse');
+          answerZone.classList.remove('speaking-pulse');
+          if (!isAutoPlaying && !isFrontAutoPlaying) {
+            audioStatusBar.classList.add('hidden');
+          }
+          if (typeof onComplete === 'function') onComplete();
+          return;
+        }
+
+        const seg = segments[idx++];
+        const utter = new SpeechSynthesisUtterance(seg.text);
+        utter.lang = seg.lang === 'zh' ? 'zh-TW' : 'en-US';
+        utter.rate = rate;
+        utter.pitch = seg.lang === 'zh' ? 1.03 : 1.0;
+
+        const bestVoice = getBestVoice(seg.lang);
+        if (bestVoice) utter.voice = bestVoice;
+
+        utter.onstart = () => {
+          audioStatusBar.classList.remove('hidden');
+          audioStatusText.textContent = seg.label || '正在朗讀...';
+          questionZone.classList.toggle('speaking-pulse', seg.zone === 'q');
+          answerZone.classList.toggle('speaking-pulse', seg.zone === 'a');
+        };
+
+        utter.onend = () => {
+          nextSegment();
+        };
+
+        utter.onerror = () => {
+          nextSegment();
+        };
+
+        window.speechSynthesis.speak(utter);
+      }
+
+      nextSegment();
+    }
+
+    // Render Front Section: 英中專業術語.pdf (Part 1 & Part 2)
+    function renderFrontSection() {
+      frontHeadingsGrid.innerHTML = '';
+      FRONT_HEADINGS.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'p-3.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200 flex items-start justify-between gap-3 transition';
+
+        const left = document.createElement('div');
+        left.className = 'space-y-1';
+        const enLine = document.createElement('div');
+        enLine.className = 'text-xs sm:text-sm font-extrabold text-blue-900';
+        enLine.textContent = `${i + 1}. ${item.en}`;
+
+        const zhLine = document.createElement('div');
+        zhLine.className = 'text-xs sm:text-sm font-bold text-rose-800 front-maskable transition';
+        if (isFrontMasked) zhLine.classList.add('blur-sm', 'select-none');
+        zhLine.textContent = `（${item.zh}）`;
+
+        left.appendChild(enLine);
+        left.appendChild(zhLine);
+
+        const btn = document.createElement('button');
+        btn.className = 'shrink-0 px-2.5 py-1.5 rounded-lg bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold transition no-print';
+        btn.textContent = '🔊 朗讀';
+        btn.addEventListener('click', () => {
+          isAutoPlaying = false;
+          isFrontAutoPlaying = false;
+          updateAutoPlayButton();
+          speakSegments([
+            { text: item.en, lang: 'en', label: `🔊 大標題 ${i + 1} (English)：${item.en}` },
+            { text: item.zh, lang: 'zh', label: `🔊 大標題 ${i + 1} (中文)：${item.zh}` }
+          ]);
+        });
+
+        card.appendChild(left);
+        card.appendChild(btn);
+        frontHeadingsGrid.appendChild(card);
+      });
+
+      frontTermsGrid.innerHTML = '';
+      FRONT_TERMS.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-teal-50/40 hover:bg-teal-50/80 border border-teal-200/80 flex flex-col justify-between gap-2.5 transition';
+
+        const topRow = document.createElement('div');
+        topRow.className = 'flex items-start justify-between gap-2';
+
+        const titleBox = document.createElement('div');
+        const enSpan = document.createElement('span');
+        enSpan.className = 'text-sm sm:text-base font-extrabold text-sky-800';
+        enSpan.textContent = `${i + 1}. ${item.en}`;
+        const slashSpan = document.createElement('span');
+        slashSpan.className = 'text-slate-400 font-bold mx-1.5';
+        slashSpan.textContent = '/';
+        const zhSpan = document.createElement('span');
+        zhSpan.className = 'text-sm sm:text-base font-extrabold text-rose-800 front-maskable transition';
+        if (isFrontMasked) zhSpan.classList.add('blur-sm', 'select-none');
+        zhSpan.textContent = item.zh;
+
+        titleBox.appendChild(enSpan);
+        titleBox.appendChild(slashSpan);
+        titleBox.appendChild(zhSpan);
+
+        const btn = document.createElement('button');
+        btn.className = 'shrink-0 px-2.5 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold transition no-print';
+        btn.textContent = '🔊 雙語朗讀';
+        btn.addEventListener('click', () => {
+          isAutoPlaying = false;
+          isFrontAutoPlaying = false;
+          updateAutoPlayButton();
+          speakSegments([
+            { text: item.en, lang: 'en', label: `🔊 專業術語 ${i + 1} (English)：${item.en}` },
+            { text: `${item.zh}。${item.desc}`, lang: 'zh', label: `🔊 專業術語 ${i + 1} (中文定義)：${item.zh}` }
+          ]);
+        });
+
+        topRow.appendChild(titleBox);
+        topRow.appendChild(btn);
+
+        const descP = document.createElement('p');
+        descP.className = 'text-xs sm:text-sm text-slate-700 leading-relaxed front-maskable transition';
+        if (isFrontMasked) descP.classList.add('blur-sm', 'select-none');
+        descP.textContent = `(${item.desc})`;
+
+        card.appendChild(topRow);
+        card.appendChild(descP);
+        frontTermsGrid.appendChild(card);
+      });
+    }
+
+    function playFrontSequence(part) {
+      isAutoPlaying = false;
+      isFrontAutoPlaying = true;
+      updateAutoPlayButton();
+      const segs = [];
+
+      if (part === 'part1' || part === 'all') {
+        FRONT_HEADINGS.forEach((item, i) => {
+          segs.push({ text: item.en, lang: 'en', label: `🔊 [一、大標題 ${i + 1}/13] ${item.en}` });
+          segs.push({ text: item.zh, lang: 'zh', label: `🔊 [一、大標題 ${i + 1}/13] ${item.zh}` });
+        });
+      }
+      if (part === 'part2' || part === 'all') {
+        FRONT_TERMS.forEach((item, i) => {
+          segs.push({ text: item.en, lang: 'en', label: `🔊 [二、專業術語 ${i + 1}/19] ${item.en}` });
+          segs.push({ text: `${item.zh}。${item.desc}`, lang: 'zh', label: `🔊 [二、專業術語 ${i + 1}/19] ${item.zh}` });
+        });
+      }
+
+      speakSegments(segs, () => {
+        isFrontAutoPlaying = false;
+        updateAutoPlayButton();
+      });
+    }
+
+    function buildCardSpeechSegments(card, part) {
+      const mode = langModeSelect.value;
+      const segs = [];
+      const cleanZhQ = card.q_zh.replace(/^[0-9]+｜/, '第 $& ').replace('｜', '題：');
+      const cleanZhA = '解答：' + card.a_zh;
+
+      if (part === 'q' || part === 'both') {
+        if (mode === 'zh' || mode === 'bilingual') {
+          segs.push({ text: cleanZhQ, lang: 'zh', zone: 'q', label: `🔊 正在朗讀考題 (${card.id})：${card.topic}` });
+        }
+        if (mode === 'en' || mode === 'bilingual') {
+          segs.push({ text: card.q_en, lang: 'en', zone: 'q', label: `🔊 Reading Question (${card.id}): ${card.topic}` });
+        }
+      }
+
+      if (part === 'a' || part === 'both') {
+        if (mode === 'zh' || mode === 'bilingual') {
+          segs.push({ text: cleanZhA, lang: 'zh', zone: 'a', label: `💡 正在朗讀解答 (${card.id})：${card.topic}` });
+        }
+        if (mode === 'en' || mode === 'bilingual') {
+          segs.push({ text: 'Answer: ' + card.a_en, lang: 'en', zone: 'a', label: `💡 Reading Answer (${card.id}): ${card.topic}` });
+        }
+      }
+      return segs;
+    }
+
+    function speakCurrentCard(part = 'both') {
+      if (!filteredCards.length) return;
+      isAutoPlaying = false;
+      isFrontAutoPlaying = false;
+      updateAutoPlayButton();
+      const card = filteredCards[currentIndex];
+      const segs = buildCardSpeechSegments(card, part);
+      speakSegments(segs);
+    }
+
+    function toggleAutoPlayAll() {
+      if (isAutoPlaying) {
+        stopSpeech();
+        return;
+      }
+      if (!filteredCards.length) return;
+      isAutoPlaying = true;
+      isFrontAutoPlaying = false;
+      updateAutoPlayButton();
+
+      function playStep() {
+        if (!isAutoPlaying || !filteredCards.length) return;
+        renderSingleCard();
+        const card = filteredCards[currentIndex];
+        const segs = buildCardSpeechSegments(card, 'both');
+        speakSegments(segs, () => {
+          if (!isAutoPlaying) return;
+          if (currentIndex < filteredCards.length - 1) {
+            currentIndex++;
+            setTimeout(playStep, 650);
+          } else {
+            isAutoPlaying = false;
+            updateAutoPlayButton();
+            audioStatusBar.classList.add('hidden');
+          }
+        });
+      }
+
+      playStep();
+    }
+
+    function updateAutoPlayButton() {
+      if (isAutoPlaying) {
+        autoPlayBtn.textContent = '⏸ 停止自動連播';
+        autoPlayBtn.className = 'px-3 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs transition';
+      } else {
+        autoPlayBtn.textContent = '▶️ 自動連續播放全部';
+        autoPlayBtn.className = 'px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition';
+      }
+      if (isFrontAutoPlaying) {
+        playAllFrontBtn.textContent = '⏹ 停止連續朗讀';
+      } else {
+        playAllFrontBtn.textContent = '▶️ 連續朗讀本區全部術語';
+      }
+    }
+
+    // Filter & Render Logic
+    function applyFilters() {
+      const cat = categorySelect.value;
+      const query = searchInput.value.trim().toLowerCase();
+      clearSearchBtn.classList.toggle('hidden', !query);
+
+      filteredCards = ALL_CARDS.filter(c => {
+        if (cat === 'BOOKMARK') {
+          if (!bookmarks.has(c.id)) return false;
+        } else if (cat !== 'ALL') {
+          if (!c.category.startsWith(cat)) return false;
+        }
+        if (query) {
+          const hay = `${c.id} ${c.category} ${c.topic} ${c.page} ${c.q_zh} ${c.q_en} ${c.a_zh} ${c.a_en}`.toLowerCase();
+          return hay.includes(query);
+        }
+        return true;
+      });
+
+      currentIndex = 0;
+      populateJumpSelect();
+      renderSingleCard();
+      renderListView();
+    }
+
+    function populateJumpSelect() {
+      jumpSelect.innerHTML = '';
+      if (!filteredCards.length) {
+        const opt = document.createElement('option');
+        opt.value = '0';
+        opt.textContent = '無符合條件的題目';
+        jumpSelect.appendChild(opt);
+        return;
+      }
+      filteredCards.forEach((c, idx) => {
+        const opt = document.createElement('option');
+        opt.value = String(idx);
+        opt.textContent = `#${idx + 1} (${c.id}) ${c.topic}`;
+        jumpSelect.appendChild(opt);
+      });
+    }
+
+    function renderSingleCard() {
+      if (!filteredCards.length) {
+        cardCounterBadge.textContent = '0 / 0 頁';
+        cardCategoryLabel.textContent = '查無符合條件的題目';
+        cardPageBadge.textContent = '-';
+        cardIdTopic.textContent = '請調整篩選分類或搜尋關鍵字';
+        cardQZh.textContent = '目前篩選條件下沒有練習題。';
+        cardQEn.textContent = 'No items match the current filter.';
+        cardAZh.textContent = '請點擊上方分類下拉選單切換回「全部練習內容 (113 題)」。';
+        cardAEn.textContent = '';
+        return;
+      }
+
+      const c = filteredCards[currentIndex];
+      cardCounterBadge.textContent = `第 ${currentIndex + 1} / ${filteredCards.length} 頁`;
+      cardCategoryLabel.textContent = c.category;
+      cardPageBadge.textContent = `講義 ${c.page}`;
+      cardIdTopic.textContent = `Card #${String(currentIndex + 1).padStart(3, '0')} (${c.id}) — ${c.topic}`;
+      cardQZh.textContent = c.q_zh;
+      cardQEn.textContent = c.q_en;
+      cardAZh.textContent = c.a_zh;
+      cardAEn.textContent = c.a_en;
+      jumpSelect.value = String(currentIndex);
+
+      const isBookmarked = bookmarks.has(c.id);
+      bookmarkBtn.textContent = isBookmarked ? '★ 已收藏本題' : '☆ 收藏本題';
+      bookmarkBtn.className = isBookmarked
+        ? 'px-3 py-1 rounded-lg border border-amber-400 bg-amber-100 text-amber-900 text-xs font-bold transition'
+        : 'px-3 py-1 rounded-lg border border-slate-300 text-xs font-semibold hover:bg-amber-50 transition';
+    }
+
+    function renderListView() {
+      listCountBadge.textContent = `共 ${filteredCards.length} 題`;
+      allCardsContainer.innerHTML = '';
+
+      filteredCards.forEach((c, idx) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-card-page';
+
+        const headerEl = document.createElement('div');
+        headerEl.className = 'bg-slate-900 text-white px-5 py-3 flex flex-wrap items-center justify-between gap-2';
+
+        const titleWrap = document.createElement('div');
+        titleWrap.className = 'flex items-center gap-2.5';
+        const badge = document.createElement('span');
+        badge.className = 'px-2 py-0.5 rounded bg-teal-500 text-slate-950 font-extrabold text-xs';
+        badge.textContent = `#${idx + 1} (${c.id})`;
+        const topicSpan = document.createElement('span');
+        topicSpan.className = 'font-bold text-sm sm:text-base';
+        topicSpan.textContent = c.topic;
+        const pageSpan = document.createElement('span');
+        pageSpan.className = 'text-xs text-slate-300';
+        pageSpan.textContent = `(${c.page})`;
+        titleWrap.appendChild(badge);
+        titleWrap.appendChild(topicSpan);
+        titleWrap.appendChild(pageSpan);
+
+        const actionsWrap = document.createElement('div');
+        actionsWrap.className = 'flex items-center gap-2 no-print';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'px-3 py-1 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition';
+        playBtn.textContent = '🔊 朗讀本卡';
+        playBtn.addEventListener('click', () => {
+          currentIndex = idx;
+          renderSingleCard();
+          const segs = buildCardSpeechSegments(c, 'both');
+          speakSegments(segs);
+        });
+        actionsWrap.appendChild(playBtn);
+
+        headerEl.appendChild(titleWrap);
+        headerEl.appendChild(actionsWrap);
+
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'p-5 space-y-4';
+
+        const qBox = document.createElement('div');
+        qBox.className = 'p-4 rounded-xl bg-blue-50/60 border border-blue-200/70';
+        const qTitle = document.createElement('div');
+        qTitle.className = 'text-base sm:text-lg font-bold text-blue-950 mb-1';
+        qTitle.textContent = c.q_zh;
+        const qSub = document.createElement('div');
+        qSub.className = 'text-xs sm:text-sm text-slate-600';
+        qSub.textContent = c.q_en;
+        qBox.appendChild(qTitle);
+        qBox.appendChild(qSub);
+
+        const aBox = document.createElement('div');
+        aBox.className = 'p-4 rounded-xl bg-teal-50/60 border border-teal-200/70';
+        const aTitle = document.createElement('div');
+        aTitle.className = 'text-sm sm:text-base font-bold text-slate-900 mb-1';
+        aTitle.textContent = '答：' + c.a_zh;
+        const aSub = document.createElement('div');
+        aSub.className = 'text-xs sm:text-sm text-slate-600';
+        aSub.textContent = c.a_en;
+        aBox.appendChild(aTitle);
+        aBox.appendChild(aSub);
+
+        bodyEl.appendChild(qBox);
+        bodyEl.appendChild(aBox);
+
+        cardEl.appendChild(headerEl);
+        cardEl.appendChild(bodyEl);
+        allCardsContainer.appendChild(cardEl);
+      });
+    }
+
+    // Tab Switching
+    function switchTab(mode) {
+      viewSingle.classList.toggle('hidden', mode !== 'single');
+      viewList.classList.toggle('hidden', mode !== 'list');
+      viewGithub.classList.toggle('hidden', mode !== 'github');
+
+      const activeCls = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-white text-blue-900 shadow-sm';
+      const inactiveCls = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-blue-100 hover:bg-white/10';
+      tabSingle.className = mode === 'single' ? activeCls : inactiveCls;
+      tabList.className = mode === 'list' ? activeCls : inactiveCls;
+      tabGithub.className = mode === 'github' ? activeCls : inactiveCls;
+    }
+
+    tabSingle.addEventListener('click', () => switchTab('single'));
+    tabList.addEventListener('click', () => switchTab('list'));
+    tabGithub.addEventListener('click', () => switchTab('github'));
+
+    // Front section controls
+    playAllFrontBtn.addEventListener('click', () => {
+      if (isFrontAutoPlaying) {
+        stopSpeech();
+      } else {
+        playFrontSequence('all');
+      }
+    });
+    playPart1Btn.addEventListener('click', () => playFrontSequence('part1'));
+    playPart2Btn.addEventListener('click', () => playFrontSequence('part2'));
+
+    toggleFrontMaskBtn.addEventListener('click', () => {
+      isFrontMasked = !isFrontMasked;
+      toggleFrontMaskBtn.textContent = isFrontMasked ? '🙈 顯示中文解釋' : '👁️ 遮罩中文解釋自測';
+      renderFrontSection();
+    });
+
+    toggleFrontCollapseBtn.addEventListener('click', () => {
+      isFrontCollapsed = !isFrontCollapsed;
+      frontSectionBody.classList.toggle('hidden', isFrontCollapsed);
+      toggleFrontCollapseBtn.textContent = isFrontCollapsed ? '🔽 展開練習區' : '🔼 收合練習區';
+    });
+
+    // Event Listeners
+    categorySelect.addEventListener('change', applyFilters);
+    searchInput.addEventListener('input', applyFilters);
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilters();
+    });
+
+    jumpSelect.addEventListener('change', () => {
+      currentIndex = parseInt(jumpSelect.value, 10) || 0;
+      renderSingleCard();
+    });
+
+    bookmarkBtn.addEventListener('click', () => {
+      if (!filteredCards.length) return;
+      const cid = filteredCards[currentIndex].id;
+      if (bookmarks.has(cid)) {
+        bookmarks.delete(cid);
+      } else {
+        bookmarks.add(cid);
+      }
+      saveBookmarks();
+      renderSingleCard();
+    });
+
+    toggleAnswerVisibilityBtn.addEventListener('click', () => {
+      isAnswerHidden = !isAnswerHidden;
+      answerContentWrapper.classList.toggle('blur-md', isAnswerHidden);
+      answerContentWrapper.classList.toggle('select-none', isAnswerHidden);
+      toggleAnswerVisibilityBtn.textContent = isAnswerHidden
+        ? '🙈 答案已遮罩（點擊顯示同頁答案）'
+        : '👁️ 預設同頁顯示答案（點擊可暫時遮罩自我測驗）';
+    });
+
+    speakBothBtn.addEventListener('click', () => speakCurrentCard('both'));
+    speakQBtn.addEventListener('click', () => speakCurrentCard('q'));
+    speakABtn.addEventListener('click', () => speakCurrentCard('a'));
+    mp3QBtn.addEventListener('click', () => speakCurrentCard('q'));
+    mp3ABtn.addEventListener('click', () => speakCurrentCard('a'));
+    autoPlayBtn.addEventListener('click', toggleAutoPlayAll);
+    stopAudioBannerBtn.addEventListener('click', stopSpeech);
+
+    prevBtn.addEventListener('click', () => {
+      if (!filteredCards.length) return;
+      stopSpeech();
+      currentIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
+      renderSingleCard();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!filteredCards.length) return;
+      stopSpeech();
+      currentIndex = (currentIndex + 1) % filteredCards.length;
+      renderSingleCard();
+    });
+
+    randomBtn.addEventListener('click', () => {
+      if (filteredCards.length <= 1) return;
+      stopSpeech();
+      let nextIdx = currentIndex;
+      while (nextIdx === currentIndex) {
+        nextIdx = Math.floor(Math.random() * filteredCards.length);
+      }
+      currentIndex = nextIdx;
+      renderSingleCard();
+    });
+
+    printPdfBtn.addEventListener('click', () => {
+      switchTab('list');
+      setTimeout(() => window.print(), 200);
+    });
+
+    copyCmdBtn.addEventListener('click', () => {
+      const cmdText = document.getElementById('app-cmd-code').textContent;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmdText);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = cmdText;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        copyCmdFeedback.classList.remove('hidden');
+        setTimeout(() => copyCmdFeedback.classList.add('hidden'), 2000);
+      } catch (e) {}
+    });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (document.activeElement === searchInput) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextBtn.click();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevBtn.click();
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        speakCurrentCard('both');
+      }
+    });
+
+    // Initial render
+    renderFrontSection();
+    applyFilters();
+  </script>
+</body>
+</html>
